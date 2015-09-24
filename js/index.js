@@ -1,10 +1,10 @@
-/*
+
 window.onerror = function(message, url, lineNumber) {
 	//console.log("Error: "+message+" in "+url+" at line "+lineNumber);
 	alert("Error: "+message+" in "+url+" at line "+lineNumber);
 	
 }
- */
+
 
 
 
@@ -12,12 +12,16 @@ pagesTracker = [];
 pagesTracker.push('main_page');
 var pushNotification;
 
+checkNewMessagesRequest = '';
+newMessages = '';
+
 
 
 
 
 var app = { 
 	
+	apiUrl : 'http://m.kosherdate.co.il',
 	pictureSource : '',
 	destinationType : '',
 	encodingType : '',	
@@ -144,12 +148,18 @@ var app = {
 		
 		app.startLoading();
 		clearTimeout(newMesssages);		
+		
+		if(checkNewMessagesRequest != '')
+			checkNewMessagesRequest.abort();
+		
+		
 		pagesTracker = [];
 		pagesTracker.push('login_page');
 		app.exit = true;
 		
+		
 		$.ajax({				
-			url: 'http://m.kosherdate.co.il/api/v1/user/logout',			
+			url: app.apiUrl+'/api/v3/user/logout',
 			success: function(data, status){	
 				//alert(JSON.stringify(data));
 				if(data.logout == 1){					
@@ -204,7 +214,7 @@ var app = {
 		app.searchFuncsMainCall = true;
 		app.setBannerDestination();
 		app.checkNewMessages();					
-		app.pushNotificationInit();
+		//app.pushNotificationInit();
 		app.sendUserPosition();
 	},
 	
@@ -233,7 +243,7 @@ var app = {
 		}
 	
 		$.ajax({ 
-			url: 'http://m.kosherdate.co.il/api/v1/user/login',
+			url: app.apiUrl+'/api/v3/user/login',
 			error: function(response){				
 				//alert(JSON.stringify(response));
 			},
@@ -267,7 +277,7 @@ var app = {
 	
 	setBannerDestination: function(){
 		$.ajax({				
-			url: 'http://m.kosherdate.co.il/api/v1/user/banner',			
+			url: app.apiUrl+'/api/v3/user/banner',			
 			success: function(response, status){
 				app.response = response;
 				//alert(JSON.stringify(app.response));   
@@ -301,7 +311,7 @@ var app = {
 		window.localStorage.setItem("user",user);
 		window.localStorage.setItem("pass",pass);	
 		$.ajax({				
-			url: 'http://m.kosherdate.co.il/api/v1/user/login',			
+			url: app.apiUrl+'/api/v3/user/login',			
 			beforeSend: function(xhr){
 				user = window.localStorage.getItem("user");
 				pass = window.localStorage.getItem("pass");	
@@ -339,7 +349,7 @@ var app = {
 		//return;
 		
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/location',
+			url: app.apiUrl+'/api/v3/user/location',
 			type: 'Post',
 			data:JSON.stringify(data),
 			success: function(response){
@@ -356,7 +366,7 @@ var app = {
 	
 	printUsers: function(){
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/users/recently_visited/2',
+			url: app.apiUrl+'/api/v3/users/recently_visited/2',
 			success: function(data, status){
 				for ( var i = 0; i < data.users.length; i++) {
 					$("#udp_"+i).find(".user_photo_wrap .user_photo").attr("src",data.users[i].mainImage);
@@ -391,7 +401,7 @@ var app = {
 	persistApnDeviceId: function(){
 		//alert(app.apnDeviceId);
 		$.ajax({
-		   url: 'http://m.kosherdate.co.il/api/v1/user/deviceId/OS:iOS',
+		   url: app.apiUrl+'/api/v3/user/deviceId/OS:iOS',
 		   type: 'Post',
 		   data: JSON.stringify({deviceId: app.apnDeviceId}),
 		   success: function(data, status){
@@ -460,7 +470,7 @@ var app = {
 	},
 	
 	back: function(){	
-		$.fancybox.close();
+		//$.fancybox.close();
 		//app.startLoading();
 		$(window).unbind("scroll");
 		window.scrollTo(0, 0);
@@ -479,9 +489,21 @@ var app = {
 		if(app.currentPageId == 'users_list_page'){
 			app.template = $('#userDataTemplate').html();
 			window.scrollTo(0, app.recentScrollPos);
-			app.setScrollEventHandler();
+			app.setScrollEventHandler(2500,3500);
 		}
-		app.searchFuncsMainCall = true;
+		else if(app.currentPageId == 'messenger_page'){
+			app.template = $('#messengerTemplate').html();
+			console.log(app.recentScrollPos);
+			window.scrollTo(0, app.recentScrollPos);
+			app.setScrollEventHandler(1000,2000);
+			
+		}
+		else{
+			var usersListPage = pagesTracker[pagesTracker.length-2];
+			if(usersListPage != 'users_list_page')
+				app.searchFuncsMainCall = true;
+		}
+		
 		app.stopLoading();
 	},
 	
@@ -521,6 +543,43 @@ var app = {
 		$(window).unbind("scroll");
 		
 	},
+
+
+	recovery: function(){
+		app.showPage('recovery_page');
+		app.currentPageWrapper.find('#user').val('');
+	},
+	
+	sendRecovery: function(){
+	var mail = app.currentPageWrapper.find('#user').val();
+	var email_pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+	if (!(email_pattern.test(mail))) {
+		alert('נא להזין כתובת דוא"ל חוקית');
+		return false;
+	}
+	$.ajax({
+		   url: app.apiUrl+'/api/v3/recovery/'+mail,
+		   success: function(response){
+		   //alert(JSON.stringify(response));
+		   app.alert(response.text);
+		   if(!response.err){
+		   app.currentPageWrapper.find('#user').val('');
+		   app.chooseMainPage();
+		   }
+		   
+		   },
+		   error: function(err){
+		   app.alert(JSON.stringify(err));
+		   app.currentPageWrapper.find('#user').val('');
+		   //alert('סיסמה נשלחה לכתובת המייל שהזנת');
+		   }
+		   });
+	},
+	
+	
+	
+	
+	
 	
 	sortByDistance: function(){
 		app.sort = 'distance';		
@@ -559,12 +618,12 @@ var app = {
 		app.container.append('<h1>תוצאות</h1><div class="dots"></div>');
 		app.action = 'getOnlineNow';
 		app.pageNumber = 1;
+		app.itemsPerPage = 30;
 		app.getUsers();
 	},
 	
  
 	getUsers: function(){
-		app.startLoading();		
 		
 		if(app.searchFuncsMainCall === true && app.positionSaved === true){
 			$('#sortByEntranceTime').hide();			
@@ -573,7 +632,7 @@ var app = {
 		}
 		
 		if(app.action == 'getOnlineNow'){					
-			app.requestUrl = 'http://m.kosherdate.co.il/api/v1/users/online/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
+			app.requestUrl = app.apiUrl+'/api/v3/users/online/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
 		}
 		else if(app.action == 'getSearchResults'){
 			var religionId = $('#search_form_page .religionList select').val();
@@ -582,18 +641,23 @@ var app = {
 			var ageTo = $(".age_2 select").val();			
 			var nickName = $('.nickName').val();
 			//var userGender=$('.gen input[name="gen"]:checked').val();
-			app.requestUrl = 'http://m.kosherdate.co.il/api/v1/users/search/religionId:'+religionId+'/countryRegionId:'+countryRegionId+'/age:'+ageFrom+'-'+ageTo+'/nickName:'+nickName+'/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
+			app.requestUrl = app.apiUrl+'/api/v3/users/search/religionId:'+religionId+'/countryRegionId:'+countryRegionId+'/age:'+ageFrom+'-'+ageTo+'/nickName:'+nickName+'/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
 			//alert(app.requestUrl);
 		}	
 		else if(app.action == 'getStatResults'){					
-			app.requestUrl = 'http://m.kosherdate.co.il/api/v1/user/statistics/'+app.statAction+'/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
+			app.requestUrl = app.apiUrl+'/api/v3/user/statistics/'+app.statAction+'/count:'+app.itemsPerPage+'/page:'+app.pageNumber+'/sort:'+app.sort;
 		}
 		
 		$.ajax({						
 			url: app.requestUrl,
 			timeout:10000,
+			   error: function(response){
+			   console.log(JSON.stringify(response));
+
+			   },
 			success: function(response, status){
 				app.response = response;
+			    //console.log(JSON.stringify(response));
 				//alert(JSON.stringify(app.response));
 			   if(app.response.users.itemsNumber=='0'&&app.pageNumber==1)
 				app.container.append('<h1 style="width:100%;text-align:center;margin-top:20px;">חיפוש הסתיים ללא תוצאות</h1>');
@@ -608,71 +672,119 @@ var app = {
 	
 	
 	displayUsers: function(){
-		for(var i in app.response.users.items){
-			var currentTemplate = app.template; 
-			var user = app.response.users.items[i];
-			currentTemplate = currentTemplate.replace("[USERNICK]",user.nickName);
-			currentTemplate = currentTemplate.replace("[AGE]",user.age);
-			//currentTemplate = currentTemplate.replace("[COUNTRY]",user.country+',');
-			if(user.city==null)user.city='';
-			currentTemplate = currentTemplate.replace("[CITY]",user.city);
-			currentTemplate = currentTemplate.replace("[IMAGE]",user.mainImage);			
-			currentTemplate = currentTemplate.replace(/\[USERNICK\]/g,user.nickName);										
-			currentTemplate = currentTemplate.replace("[USER_ID]", user.id);	
-			var aboutUser = user.about;
-			//if(aboutUser==null)aboutUser='';
-			//if(typeof(user.about) === 'string'){   
-			//	if(user.about.length > 90){
-			//		aboutUser = user.about.substring(0,90)+'...';
-			//	}
-			//	else{
-			//		aboutUser = user.about;
-			//	}
-			//}				
-			//alert(aboutUser);
+		
+		if(app.currentPageId == 'users_list_page'){
 			
-			currentTemplate = currentTemplate.replace("[ABOUT]", aboutUser);			
-			app.container.append(currentTemplate);			
-			var currentUserNode = app.container.find(".user_data:last-child");		
-			//alert(currentUserNode.find('.user_short_txt').css('text-align'));
-			currentUserNode.find(".user_short_txt").attr("onclick","app.getUserProfile("+user.id+");");
-			currentUserNode.find(".user_photo_wrap").attr("onclick","app.getUserProfile("+user.id+");");
-			if(user.isNew == 1){						
-				currentUserNode.find(".blue_star").show();
-			}					
-			if(user.isPaying == 1){						
-				currentUserNode.find(".special3").show();
+			$('.loadingHTML').remove();
+			
+			var userId = window.localStorage.getItem("userId");
+			
+			console.log(app.response.users.itemsNumber);
+			
+			
+			if(app.response.users.itemsNumber == 0){
+				app.container.append('<div class="center noResults">אין תוצאות</div>')
+				return;
 			}
-			if(user.isOnline == 1){						
-				currentUserNode.find(".on2").show();				
-			}else{
-				currentUserNode.find(".on1").show();
+		
+		
+			for(var i in app.response.users.items){
+				var currentTemplate = app.template; 
+				var user = app.response.users.items[i];
+				currentTemplate = currentTemplate.replace("[USERNICK]",user.nickName);
+				currentTemplate = currentTemplate.replace("[AGE]",user.age);
+				//currentTemplate = currentTemplate.replace("[COUNTRY]",user.country+',');
+				if(user.city==null)user.city='';
+				currentTemplate = currentTemplate.replace("[CITY]",user.city);
+				currentTemplate = currentTemplate.replace("[IMAGE]",user.mainImage.url);
+				currentTemplate = currentTemplate.replace(/\[USERNICK\]/g,user.nickName);										
+				currentTemplate = currentTemplate.replace("[USER_ID]", user.id);	
+				var aboutUser = user.about;
+				//if(aboutUser==null)aboutUser='';
+				//if(typeof(user.about) === 'string'){   
+				//	if(user.about.length > 90){
+				//		aboutUser = user.about.substring(0,90)+'...';
+				//	}
+				//	else{
+				//		aboutUser = user.about;
+				//	}
+				//}				
+				//alert(aboutUser);
+				
+				currentTemplate = currentTemplate.replace("[ABOUT]", aboutUser);			
+				app.container.append(currentTemplate);			
+				var currentUserNode = app.container.find(".user_data:last-child");		
+				//alert(currentUserNode.find('.user_short_txt').css('text-align'));
+				currentUserNode.find(".user_short_txt").attr("onclick","app.getUserProfile("+user.id+");");
+				currentUserNode.find(".user_photo_wrap").attr("onclick","app.getUserProfile("+user.id+");");
+				if(user.isNew == 1){						
+					currentUserNode.find(".blue_star").show();
+				}					
+				if(user.isPaying == 1){						
+					//currentUserNode.find(".special3").show();
+				}
+				if(user.isOnline == 1){						
+					currentUserNode.find(".on2").show();				
+				}else{
+					currentUserNode.find(".on1").show();
+				}
+				if(user.distance != ""){						
+					currentUserNode.find(".distance_value").show().find("span").html(user.distance);
+				}
+				if(user.id==window.localStorage.getItem("userId")){currentUserNode.find('.send_mes').hide();}
 			}
-			if(user.distance != ""){						
-				currentUserNode.find(".distance_value").show().find("span").html(user.distance);
+			//setTimeout(app.stopLoading(), 10000);
+			//app.stopLoading();
+			app.responseItemsNumber = app.response.users.itemsNumber;
+			if(app.responseItemsNumber == app.itemsPerPage){
+				var loadingHTML = '<div class="loadingHTML">'+$('#loadingBarTemplate').html()+'</div>';
+				$(loadingHTML).insertAfter(currentUserNode);
 			}
-			if(user.id==window.localStorage.getItem("userId")){currentUserNode.find('.send_mes').hide();}
+			
+			app.setScrollEventHandler(2500,3500);
 		}
-		//setTimeout(app.stopLoading(), 10000);
-		//app.stopLoading();
-		app.responseItemsNumber = app.response.users.itemsNumber;
-		app.setScrollEventHandler();
-	},	
+		else{
+			app.pageNumber--;
+		}
+		
+	},
 	
 		
-	setScrollEventHandler: function(){
-		$(window).scroll(function(){	
-			var min=700;
-			//alert($(this).width());
-			if($(this).width()>500)min=1300;
+	setScrollEventHandler: function(min1, min2){
+		$(window).scroll(function(){
+						 //var min=2500;
+						 
+			min = min1;
+			if($(this).width()>767) min = min2;
+						 
+						 
 			app.recentScrollPos = $(this).scrollTop();
-			if(app.recentScrollPos >= app.container.height()-min){						
-				$(this).unbind("scroll");				
-				if(app.responseItemsNumber == app.itemsPerPage){					
-					app.pageNumber++;					
-					app.getUsers();
+			console.log('setScrollEventHandler:' + app.recentScrollPos);
+			console.log(app.recentScrollPos + ':' + app.container.height());
+			//alert(app.recentScrollPos + ' > ' + app.container.height() +' - ' +min);
+						 
+						 
+					 
+			if(app.recentScrollPos >= app.container.height()-min){
+				$(this).unbind("scroll");
+						 
+				//alert(app.recentScrollPos);
+							 
+							 
+				if(app.responseItemsNumber == app.itemsPerPage){
+							 
+					app.pageNumber++;
+							 
+					if(app.currentPageId == 'messenger_page'){
+						 app.getMessenger();
+					}
+					else{
+						app.getUsers();
+					}
 				}
+						 //else alert(app.itemsPerPage);
 			}
+			
 		});
 	},
 	
@@ -695,14 +807,15 @@ var app = {
 		});	
 		var userId = window.localStorage.getItem("userId");		
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/profile/'+userId,						
+			url: app.apiUrl+'/api/v3/user/profile/'+userId,						
 			success: function(user, status, xhr){
+				console.log(JSON.stringify(user));
 				app.showPage('my_profile_page');
 				app.container = app.currentPageWrapper.find('.myProfileWrap');		
 				app.container.find('.txt strong').html(user.nickName+', <span>'+user.age+'</span>');			
 				app.container.find('.txt strong').siblings('span').text(user.city); 
 				app.container.find('.txt').append(user.about);			
-				app.container.find('.user_pic img').attr("src",user.mainImage);		
+				app.container.find('.user_pic img').attr("src",user.mainImage.url);
 				if(user.isPaying==1){
 					app.container.find(".special4").show();
 				}
@@ -740,7 +853,7 @@ var app = {
 	
 	getEditProfile: function(){
 		$.ajax({
-		   url: 'http://m.kosherdate.co.il/api/v1/getedit',
+		   url: app.apiUrl+'/api/v3/getedit',
 		   success: function(response){
 			   //alert(JSON.stringify(response));
 			   app.response = response.user;
@@ -761,15 +874,18 @@ var app = {
 			   app.template = app.template.replace(/\[Y\]/g,response.user.Y);
 			   app.template = app.template.replace(/\[n\]/g,response.user.n);
 			   app.template = app.template.replace(/\[j\]/g,response.user.j);
+			   /*
 			   if(response.user.userGender=='1')
 				app.template = app.template.replace(/\[userGenderName\]/g,'גבר');
 			   else
 				app.template = app.template.replace(/\[userGenderName\]/g,'אישה');
+			   */
 			   app.container.html(app.template).trigger('create');
 			   app.getRegions();
 			   app.getReligions();
 			   $('#userBirth').html(app.getBithDate()).trigger('create');
-			   app.container.find('.userGender').html(app.getuserGender()).trigger('create');
+			   
+			   //app.container.find('.userGender').html(app.getuserGender()).trigger('create');
 		   },
 		   error: function(err){
 			   //alert(JSON.stringify(err));
@@ -794,11 +910,15 @@ var app = {
 		var name = '';
 		var val = '';
 		var input = $(el).parent().find(tag);
+		var valInput = '';
+
 		if(input.size()=='3'){
 			var er=false;
+			val = input.eq(2).val()+'-'+input.eq(1).val()+'-'+input.eq(0).val();
+			valInput = input.eq(0).val()+'-'+input.eq(1).val()+'-'+input.eq(2).val();
 			input.each(function(index){
-				if(index!='0')val=val+'-';
-				val=val+$(this).val();
+				//if(index!='0')val=val+'-';
+				//val=val+$(this).val();
 				if($(this).val().length==0){
 				   alert('אנא תמאו ת. לידה');
 				   er=true;
@@ -830,15 +950,49 @@ var app = {
 	
 		if($(el).parent().find('.userFailed').length > 0&&$(el).parent().find('.userFailed').is(":visible"))
 			return false;
+		
+		
+		
+		
+		
+		console.log("Abort checkNewMessagesRequest");
+		checkNewMessagesRequest.abort();
+		clearTimeout(newMessages);
+		
+		
+		
 		app.startLoading();
 		//alert(name+'='+val);
 		$.ajax({
-		   url: 'http://m.kosherdate.co.il/api/v1/saveprofile',
+		   url: app.apiUrl+'/api/v3/saveprofile',
 		   //dataType: 'json',
 		   type: 'post',
 		   data: JSON.stringify({name:name,val:val}),
 		   contentType: "application/json; charset=utf-8",
 		   success : function(res){
+			   
+			   
+			   if(res.err != '1'){
+			       console.log(JSON.stringify(res));
+			   
+			       console.log("Abort checkNewMessagesRequest");
+			       checkNewMessagesRequest.abort();
+			       clearTimeout(newMessages);
+			   
+			       var user = app.container.find("#Nick").val();
+			       var pass = app.container.find("#userPass").val();
+			       console.log("USERNAME: " + user);
+			       console.log("PASSWORD: " + pass);
+			       user = unescape(encodeURIComponent(user));
+			       pass = unescape(encodeURIComponent(pass));
+			       window.localStorage.setItem("user",user);
+			       window.localStorage.setItem("pass",pass);
+			   }
+			   
+			   app.ajaxSetup();
+			   app.checkNewMessages()
+			   
+			   
 			   app.stopLoading();
 			   //alert(JSON.stringify(res));return false;
 			   if(res.err == '1'){
@@ -854,7 +1008,7 @@ var app = {
 				}
 				if(val=='0'&&name=='userGender')val = 'אישה';
 				if(val=='1'&&name=='userGender')val = 'גבר';
-				if(name=='userBirthday') val=val.replace(/-/g,' / ');
+				if(name=='userBirthday') val=valInput.replace(/-/g,' / ');
 				if(name=='userPass')
 					$(el).parent().next().find('input').val(val);
 				else
@@ -918,7 +1072,7 @@ var app = {
 		
 /*	getSexPreference: function(){
 		$.ajax({			
-			url: 'http://m.ricosybellas.com/api/v1/list/sexPreference',						
+			url: 'http://m.ricosybellas.com/api/v3/list/sexPreference',						
 			success: function(list, status, xhr){							
 				var html = '';	
 				if(app.currentPageId == 'register_page'){
@@ -956,7 +1110,7 @@ var app = {
 	
 	/*getCountries: function(){
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/list/country',
+			url: app.apiUrl+'/api/v3/list/country',
 			success: function(list, status, xhr){
 				var html = '<select name="countryCode" onchange="app.getRegions($(this).val());" data-iconpos="right">';
 				html = html + '<option value=""></option>';//Seleccione un país
@@ -974,7 +1128,7 @@ var app = {
 	
 	getRegions: function(){
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/list/regions',						
+			url: app.apiUrl+'/api/v3/list/regions',						
 			success: function(list, status, xhr){	
 				//alert(JSON.stringify(list));
 				var html = '<select name="countryRegionId" data-iconpos="left" id="countryRegionId" onchange="app.delRed(this);">';
@@ -982,7 +1136,7 @@ var app = {
 					html = html + '<option value="">לא חשוב</option>';
 				}
 				if(app.currentPageId == 'register_page'){
-					html = html + '<option value="">לבחור איזור</option>';
+					html = html + '<option value="">בחרו</option>';
 				}
 				app.container.find(".regionsList").html('');
 				if(list.itemsNumber > 0){
@@ -1012,7 +1166,7 @@ var app = {
 	
 	getReligions: function(){
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/list/religions',						
+			url: app.apiUrl+'/api/v3/list/religions',						
 			success: function(list, status, xhr){	
 				//alert(JSON.stringify(list));
 				var html = '<select name="religionId" data-iconpos="left" id="religionId" onchange="app.delRed(this);">';
@@ -1051,7 +1205,7 @@ var app = {
 	/*getRegions: function(countryCode){
 		if(countryCode!==''){
 			$.ajax({
-				url: 'http://m.kosherdate.co.il/api/v1/list/regions/'+countryCode,						
+				url: app.apiUrl+'/api/v3/list/regions/'+countryCode,						
 				success: function(list, status, xhr){							
 					var html = '<select name="regionCode" onchange="app.getCities(\''+countryCode+'\',$(this).val());" data-iconpos="right">';
 					//if(app.currentPageId == 'search_form_page'){
@@ -1094,7 +1248,7 @@ var app = {
 	/*getCities: function(countryCode,regionCode){
 		if(regionCode!==''){
 			$.ajax({
-				url: 'http://m.kosherdate.co.il/api/v1/list/cities/'+countryCode+'/'+regionCode,						
+				url: app.apiUrl+'/api/v3/list/cities/'+countryCode+'/'+regionCode,						
 				success: function(list, status, xhr){
 					//alert( JSON.stringify(list));				
 					if(list.itemsNumber > 0){
@@ -1125,14 +1279,14 @@ var app = {
 			var data = JSON.stringify(
 				$('#regForm').serializeObject()
 			);
-			//alert(data);
+			console.log(data);
 			$.ajax({
-				url: 'http://m.kosherdate.co.il/api/v1/user',
+				url: app.apiUrl+'/api/v3/user',
 				type: 'Post',
 				data: data,
 				success: function(response){
 					app.response = response;
-					//alert( JSON.stringify(app.response));
+					console.log( JSON.stringify(app.response));
 					app.stopLoading();
 					if(app.response.result > 0){
 						var user = app.container.find("#userEmail").val(); 
@@ -1144,16 +1298,13 @@ var app = {
 						app.getRegStep();
 					}
 					else{
-						navigator.notification.alert(
-							$('<div>'+app.response.err+'</div>').text(),								
-							//app.response.result,
-							'Notification',
-							'Notification'
-						);
+						app.alert($('<div>'+app.response.err+'</div>').text());
 					}    
-				}//,error: function(error){
-				//	alert( JSON.stringify(error));
-				//}
+				}
+				   
+				,error: function(error){
+					console.log("ERROR: " + JSON.stringify(error));
+				}
 			});
 			
 			
@@ -1169,6 +1320,144 @@ var app = {
 		window.scrollTo(0,0);
 	},
 	
+	
+	formIsValid: function(){
+		var email_pattern = new RegExp(/^[+a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/i);
+		if (!(email_pattern.test($('#userEmail').val()))) {
+			alert('דוא"ל שגוי');
+			return false;
+		}
+		
+		if ($('#userPass').val().length < 4 || $('#userPass').val().length > 12) {
+			alert("סיסמה שגויה (אמור להיות 4-12 סימנים)");
+			$('#userPass').focus();
+			return false;
+		}
+		if ($('#userPass').val() != $('#userPass2').val()) {
+			alert("טעות בסיסמה שנית");
+			$('#userPass2').focus();
+			return false;
+		}
+		if (app.container.find('#userNick').val().length < 3) {
+			alert('כינוי שגוי (אמור להיות 3 סימנים לפחות)');
+			//$('#userNic').focus();
+			return false;
+		}
+		
+		if(app.container.find('#userGender').val() == ''){
+			app.alert('מין שגוי');
+			return false;
+		}
+		
+		if(!app.container.find('#userfName').val().length){
+			app.alert('שם פרטי שגוי');
+			return false;
+		}
+		if(!app.container.find('#userlName').val().length){
+			app.alert('שם משפחה שגוי');
+			return false;
+		}
+		
+		if(!$('#d').val().length || !$('#m').val().length || !$('#y').val().length){
+			alert('תאריך לידה שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.regionsList select').val().length) {
+			app.alert('איזור שגוי');
+			return false;
+		}
+		
+		if(!app.container.find('#userCity').val().length){
+			app.alert('עיר שגויה');
+			return false;
+		}
+		
+		if (!app.container.find('.maritalStatusList select').val().length) {
+			app.alert('מצב משפחתי שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.childrenList select').val().length) {
+			app.alert('מספר ילדים שגוי');
+			return false;
+		}
+		
+		if(!app.container.find('.religionList select').val().length){
+			app.alert('השקפה שגויה');
+			return false;
+		}
+		
+		if (!app.container.find('.educationList select').val().length) {
+			app.alert('השכלה שגויה');
+			return false;
+		}
+		
+		if (!app.container.find('.occupationList select').val().length) {
+			app.alert('עיסוק שגוי');
+			return false;
+		}
+		
+		
+		
+		
+		
+		if (!app.container.find('.heightList select').val().length) {
+			app.alert('גובה שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.bodyTypeList select').val().length) {
+			app.alert('מבנה גוף שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.eyesColorList select').val().length) {
+			app.alert('צבע עיניים שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.hairColorList select').val().length) {
+			app.alert('צבע השיער שגוי');
+			return false;
+		}
+		
+		if (!app.container.find('.hairLengthList select').val().length) {
+			app.alert('תסרוקת שגויה');
+			return false;
+		}
+		
+		if (!app.container.find('.smokingList select').val().length) {
+			app.alert('הרגלי עישון שגויים');
+			return false;
+		}
+		
+		
+		if(app.container.find('#aboutMe').val().length < 10){
+			app.alert('על עצמי שגוי (אמור להיות 10 סימנים לפחות)');
+			return false;
+		}
+		
+		if(app.container.find('#lookingFor').val().length < 10){
+			app.alert('את מי אני מחפש/ת שגוי (אמור להיות 10 סימנים לפחות)');
+			return false;
+		}
+		
+		if(!app.container.find('.lookingForList input[type="checkbox"]:checked').size()){
+			app.alert('מה אני מחפש/ת שגוי');
+			return false;
+		}
+		
+		if(!app.container.find('#confirm').is(":checked")){
+			app.alert('אנא סמנו בתיבה');
+			return false;
+		}
+		
+		return true;
+	},
+	
+	
+	/*
 	formIsValid: function(){
 		var text='';
 		if(app.container.find('#userNick').val().length == 0){
@@ -1202,11 +1491,7 @@ var app = {
 				app.container.find('#userNick').focus();
 			}
 		}
-		/*if ($('#userEmail').val() != $('#userEmail2').val()) {
-			alert("Error in retyped email");
-			$('#userEmail2').focus();
-			return false;
-		}*/
+		
 		
 		if (app.container.find('#userPass').val().length < 6 || app.container.find('#userPass').val().length > 12) {
 			app.container.find('#userPass').css({'background':'red'});
@@ -1307,12 +1592,12 @@ var app = {
 			alert(text);
 			return false;
 		}
-		/*if($('#confirm option:selected').val() != "1"){
-			alert('Please check confirmation box');
-			return false;
-		}*/
+		
 		return true;
 	},
+	
+	*/
+	
 	
 	delRed: function(el){
 		$(el).attr('style','');
@@ -1329,41 +1614,57 @@ var app = {
 		app.getUsers();
 	},
 	
+	
 	reportAbuse: function(){
+		
 		var abuseMessage = $('#abuseMessage').val();
+		
 		$.ajax({
-		   url: app.apiUrl+'/api/v2/user/abuse/'+app.reportAbuseUserId,
+		   url: app.apiUrl+'/api/v3/user/abuse/'+app.reportAbuseUserId,
 		   type: 'Post',
 		   contentType: "application/json; charset=utf-8",
 		   data: JSON.stringify({abuseMessage: abuseMessage}),
 		   error: function(response){
+		   
 			   //alert(JSON.stringify(response));
+		   
 		   },
 		   success: function(response, status, xhr){
 			   $('#abuseMessage').val('');
-			   app.alert('Thank you for your report. The message has been sent');
+			   app.alert('תודה. ההודעה נשלחה.');
 			   app.back();
 		   }
 		});
 	},
 	
+
 	getUserProfile: function(userId){
 		if(userId==window.localStorage.getItem("userId")){app.getMyProfileData(); return;}
 		app.ajaxSetup();
-		app.startLoading();	
+		app.startLoading();
+		
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/profile/'+userId,
+			url: app.apiUrl+'/api/v3/user/profile/'+userId,
 			type: 'Get',
+			   error: function(error){
+			   console.log(JSON.stringify(error));
+			   },
 			success: function(user, status, xhr){
-				//alert( JSON.stringify(user));
+			   
+			    app.reportAbuseUserId = userId;
+			    $('.my-gallery').html('');
 				app.showPage('user_profile_page');
 				window.scrollTo(0, 0);
 				var detailsContainer = app.container.find('#user_details');
-				app.container.find('#pic1, #pic2, #pic3').attr("src","");
 				app.container.find(".special3, .blue_star, .on5, .pic_wrap").hide();
-				app.container.find('.pic_wrap').addClass("left").removeClass("center");
-				app.container.find('#pic1').parent('a').addClass("fancybox");
-				app.container.find("h1 span").text(user.nickName);
+			   
+				//app.container.find('.pic_wrap').addClass("left").removeClass("center");
+				//app.container.find('#pic1').parent('a').addClass("fancybox");
+			   
+			    app.container.find("h1 span").text(user.nickName);
+			   
+			   
+			   /*
 				app.container.find('#pic1').attr("src",user.mainImage).parent('a').attr({"href":user.mainImage, "rel":"images_"+user.userId});				
 				if(user.mainImage == "images/0.jpg"
 				|| user.mainImage == "images/1.jpg"){
@@ -1386,10 +1687,45 @@ var app = {
 					app.container.find('.pic_wrap').eq(2).show()
 						.find("img").attr("src",user.otherImages[1])
 						.parent('a').attr({"href":user.otherImages[1], "rel":"images_"+user.userId});
-				}				
+				}
+				*/
+			   
+			   
+			   if(user.mainImage.size.length){
+			   $('.noPicture').hide();
+			   var userPhotoTemplate = $('#userPhotoTemplate').html().replace(/\[ID\]/g,'pic1');
+			   $(userPhotoTemplate).appendTo('.my-gallery');
+			   app.container.find('#pic1').attr("src",user.mainImage.url).parent('a').attr({"href":user.mainImage.url, "data-size": user.mainImage.size});
+			   app.container.find('.pic_wrap').eq(0).show();
+			   }
+			   else{
+			   $('.noPicture img').attr("src",user.mainImage.url);
+			   $('.noPicture').show();
+			   }
+			   
+			   
+			   if(typeof user.otherImages[0] !== "undefined"){
+			   app.proccessUserPhotoHtml(user,1);
+			   
+			   }else{
+			   app.container.find('.pic_wrap').addClass("center");
+			   }
+			   
+			   if(typeof user.otherImages[1] !== "undefined"){
+			   app.proccessUserPhotoHtml(user,2);
+			   }
+			   
+			   
+			   initPhotoSwipeFromDOM('.my-gallery');
+			   
+				
+				
+				/*
 				if(user.isPaying == 1){
 					app.container.find(".special3").show();
 				}
+				 */
+			   
 				if(user.isNew == 1){
 					app.container.find(".blue_star").show();
 				}				
@@ -1404,11 +1740,31 @@ var app = {
 				app.profileGroupTemplate = $('#userProfileGroupTemplate').html();
 				app.profileLineTemplate = $('#userProfileLineTemplate').html();
 				app.profileLineTemplate2 = $('#userProfileLineTemplate2').html();
+			   
+			   
+			   /*
 				var profileButtonsTemplate = $('#userProfileButtonsTemplate').html();
-				profileButtonsTemplate = profileButtonsTemplate.replace(/\[USERNICK\]/g,user.nickName);									
+				profileButtonsTemplate = profileButtonsTemplate.replace(/\[USERNICK\]/g,user.nickName);
 				profileButtonsTemplate = profileButtonsTemplate.replace("[USER_ID]", user.userId);
-				//profileButtonsTemplate.insertBefore(detailsContainer);
-				var html = profileButtonsTemplate;				 				
+			   var html = profileButtonsTemplate;
+				*/
+			   
+			   
+			   
+			   if(user.userId != window.localStorage.getItem('userId')){
+				   var profileButtonsTemplate = $('#userProfileButtonsTemplate').html();
+				   var profileButtonsTemplate_2 = $('#userProfileButtonsTemplate_2').html();
+				   profileButtonsTemplate = profileButtonsTemplate.replace(/\[USERNICK\]/g,user.nickName);
+				   profileButtonsTemplate = profileButtonsTemplate.replace("[USER_ID]", user.userId);
+			   }
+			   else{
+				   var profileButtonsTemplate = '';
+				   var profileButtonsTemplate_2 = '';
+			   }
+			   
+			   var html = profileButtonsTemplate;
+			   
+			   
 				if(!((user.eyesColor== undefined || user.eyesColor=='') && (user.bodyType== undefined || user.bodyType=='') && (user.hairColor== undefined || user.hairColor=='') && (user.hairLength== undefined || user.hairLength=='') && (user.breast== undefined || user.breast=='')))
 					html = html + app.getProfileGroup("מראה חיצוני");
 				if(user.eyesColor!== undefined && user.eyesColor!=='')html = html + app.getProfileLine("צבע עיניים", user.eyesColor);
@@ -1443,11 +1799,40 @@ var app = {
 				//	if(user.hobbies!== undefined && user.hobbies!=='')html = html + app.getProfileLine("Mis intereses", user.hobbies);
 				//	if(user.music!== undefined && user.music!=='')html = html + app.getProfileLine("My Music", user.music);
 				//}
+			   
+			   
+				html = html + profileButtonsTemplate + profileButtonsTemplate_2;
+			   
 				detailsContainer.html(html).trigger('create');
 				app.stopLoading();				
 			}
 		});
 	},
+	
+	
+	
+	
+	proccessUserPhotoHtml: function(user,index){
+		
+		var userPhotoTemplate = $('#userPhotoTemplate').html().replace(/\[ID\]/g,'pic' + index + 1);
+		$(userPhotoTemplate).appendTo('.my-gallery');
+		
+		var imageSize = (user.otherImages[index-1].size.length) ? user.otherImages[index-1].size : '1x1' ;
+		
+		console.log("SIZE of " + user.otherImages[index-1].url + ":" + imageSize);
+		
+		app.container
+		.find('.pic_wrap')
+		.css({"float": "left"})
+		.eq(index)
+		.show()
+		.find('img')
+		.show()
+		.attr("src",user.otherImages[index-1].url)
+		.parent('a')
+		.attr({"href": user.otherImages[index-1].url, "data-size": imageSize});
+	},
+		
 	
 	
 	getProfileGroup: function(groupName){
@@ -1467,47 +1852,101 @@ var app = {
 		return line;
 	},
 	
-	getMessenger: function(){		
-		app.startLoading();
-		app.showPage('messenger_page');
-		window.scrollTo(0, 0);
+	getMessenger: function(){
+		
+		if(app.pageNumber == 1){
+			app.startLoading();
+		}
+		
+		app.itemsPerPage = 20;
+		
+		
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/contacts',									
+			url: app.apiUrl + '/api/v3/user/contacts/perPage:' + app.itemsPerPage + '/page:' + app.pageNumber,
+			error: function(response){
+			   console.log(JSON.stringify(response));
+			},
 			success: function(response){
-				
-				app.response = response;				
-				//if(pagesTracker.indexOf('messenger_page')!=-1){
-				//	pagesTracker.splice(pagesTracker.length-pagesTracker.indexOf('messenger_page'),pagesTracker.indexOf('messenger_page'));
-				//}
-				
-				app.container = app.currentPageWrapper.find('.chats_wrap');
-				app.container.html('');				
-				app.template = $('#messengerTemplate').html();
-				for(var i in app.response.allChats){
-					var currentTemplate = app.template; 
+			   
+			console.log(JSON.stringify(response));
+			   
+			app.response = response;
+			   //if(pagesTracker.indexOf('messenger_page')!=-1){
+			   //	pagesTracker.splice(pagesTracker.length-pagesTracker.indexOf('messenger_page'),pagesTracker.indexOf('messenger_page'));
+			   //}
+			app.showPage('messenger_page');
+			   
+			   
+			app.container = app.currentPageWrapper.find('.chats_wrap');
+			if(app.pageNumber == 1){
+			   app.container.html('');
+			}
+			   
+			if(app.currentPageId == 'messenger_page'){
+			   
+			   $('.loadingHTML').remove();
+			   
+			   app.responseItemsNumber = app.response.chatsNumber;
+			   
+			   if(app.responseItemsNumber == 0){
+			       app.container.append('<div class="center noResults">אין הודעות</div>')
+			       return;
+			   }
+			   
+			   
+			   app.template = $('#messengerTemplate').html();
+			   for(var i in app.response.allChats){
+					var currentTemplate = app.template;
 					var chat = app.response.allChats[i];
-					currentTemplate = currentTemplate.replace("[IMAGE]",chat.user.mainImage);
+					currentTemplate = currentTemplate.replace("[IMAGE]",chat.user.mainImage.url);
 					currentTemplate = currentTemplate.replace(/\[USERNICK\]/g,chat.user.nickName);
 					currentTemplate = currentTemplate.replace("[RECENT_MESSAGE]",chat.recentMessage.text);
-					currentTemplate = currentTemplate.replace("[DATE]", chat.recentMessage.date);					
+					currentTemplate = currentTemplate.replace("[DATE]", chat.recentMessage.date);
 					currentTemplate = currentTemplate.replace("[USER_ID]", chat.user.userId);
 					app.container.append(currentTemplate);
-					var currentUserNode = app.container.find(":last-child");
-					if(chat.newMessagesCount > 0)currentUserNode.find(".new_mes_count").html(chat.newMessagesCount).show();
-					//if(chat.user.isPaying == 1)currentUserNode.find(".special2").show();
-					
-				}
-				app.stopLoading();
-			}
+						
+			        if(chat.newMessagesCount > 0 || chat.user.isPaying == 1){
+			            var currentUserNode = app.container.find(":last-child");
+			            if(chat.newMessagesCount > 0)
+			                currentUserNode.find(".new_mes_count").html(chat.newMessagesCount).show();
+			   
+			            if(chat.user.isPaying == 1)
+			                currentUserNode.find(".special2").show();
+			        }
+			   }
+			   
+			   
+			   //console.log(app.container.html());
+			   
+			   
+			   
+			   
+			   if(app.responseItemsNumber == app.itemsPerPage){
+			       var loadingHTML = '<div class="loadingHTML mar_top_8">'+$('#loadingBarTemplate').html()+'</div>';
+			       $(loadingHTML).insertAfter(app.container.find('.mail_section:last-child'));
+			   }
+			   //else{alert(app.responseItemsNumber +' '+app.itemsPerPage)}
+			   
+			   app.setScrollEventHandler(1000, 2000);
+			   
+			   
+			   }
+			   else{
+			       app.pageNumber--;
+			   }
+			   
+			       app.stopLoading();
+			   }
 		});
 	},
+		
 	
 	getChat: function(chatWith, userNick){
 		if(chatWith==window.localStorage.getItem("userId")){app.getMyProfileData(); return;}
 		app.chatWith = chatWith;
 		app.startLoading();
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/chat/'+app.chatWith,									
+			url: app.apiUrl+'/api/v3/user/chat/'+app.chatWith,									
 			success: function(response){				
 				app.response = response;
 				//alert(JSON.stringify(app.response));
@@ -1536,6 +1975,9 @@ var app = {
 		var html = '';
 		var k = 1;
 		var appendToMessage = '';
+		
+		console.log(app.response);
+		
 				
 		for(var i in app.response.chat.items){					
 			var currentTemplate = app.template; 
@@ -1585,7 +2027,7 @@ var app = {
 			$('#message').val('');
 			app.startLoading();
 			$.ajax({
-				url: 'http://m.kosherdate.co.il/api/v1/user/chat/'+app.chatWith,
+				url: app.apiUrl+'/api/v3/user/chat/'+app.chatWith,
 				type: 'Post',
 				contentType: "application/json; charset=utf-8",
 				data: JSON.stringify({			
@@ -1611,7 +2053,7 @@ var app = {
 	refreshChat: function(){
 		if(app.currentPageId == 'chat_page'){
 			$.ajax({
-				url: 'http://m.kosherdate.co.il/api/v1/user/chat/'+app.chatWith+'/refresh',
+				url: app.apiUrl+'/api/v3/user/chat/'+app.chatWith+'/refresh',
 				type: 'Get',
 				complete: function(response, status, jqXHR){					
 					//app.stopLoading();
@@ -1646,7 +2088,7 @@ var app = {
 			//alert(val);
 
 			$.ajax({
-				url:'http://m.kosherdate.co.il/api/v1/chekUserFields/'+name+'='+val,
+				url:app.apiUrl+'/api/v3/chekUserFields/'+name+'='+val,
 				type:'Get',
 				success: function(response){
 				   //alert(JSON.stringify(response));
@@ -1666,8 +2108,8 @@ var app = {
 	
 	checkNewMessages: function(){
 		if(app.currentPageId != 'login_page'){
-		  $.ajax({
-			 url: 'http://m.kosherdate.co.il/api/v1/user/newMessagesCount',
+		  checkNewMessagesRequest = $.ajax({
+			 url: app.apiUrl+'/api/v3/user/newMessagesCount',
 			 type: 'Get',
 			 complete: function(response, status, jqXHR){
 				//app.stopLoading();
@@ -1706,7 +2148,7 @@ var app = {
 	
 	getSubscription: function(){
 		//var userId = window.localStorage.getItem("userId");
-		//var ref = window.open('http://m.kosherdate.co.il/subscription/?userId='+userId+'&app=1', '_blank', 'location=yes');
+		//var ref = window.open(app.apiUrl+'/subscription/?userId='+userId+'&app=1', '_blank', 'location=yes');
 		app.showPage('subscription_page');
 		$('input[type="radio"]').removeAttr("checked");
 		IAP.initialize();
@@ -1735,13 +2177,13 @@ var app = {
 	},
 	
 	deleteImage: function(){
-		app.requestUrl = 'http://m.kosherdate.co.il/api/v1/user/images/delete/' + app.imageId,
+		app.requestUrl = app.apiUrl+'/api/v3/user/images/delete/' + app.imageId,
 		app.requestMethod = 'Post';
 		app.getUserImages();
 	},
 	
 	displayUserImages: function(){
-		app.requestUrl = 'http://m.kosherdate.co.il/api/v1/user/images';
+		app.requestUrl = app.apiUrl+'/api/v3/user/images';
 		app.requestMethod = 'Get';
 		app.getUserImages();
 	},
@@ -1832,7 +2274,7 @@ var app = {
         var ft = new FileTransfer();
         ft.upload(
         	imageURI, 
-        	encodeURI("http://m.kosherdate.co.il/api/v1/user/image"), 
+        	encodeURI("http://m.kosherdate.co.il/api/v3/user/image"), 
         	app.uploadSuccess, 
         	app.uploadFailure,
 	        options
@@ -1885,46 +2327,182 @@ var app = {
 		app.showPage('register_page');
 		$('#header, #beforeHead').css({"position":"absolute"});
 		$('#birthDate').html(app.getBithDate()).trigger('create');
-		//app.getCountries();
+		
+		
+		app.getList('religions');
+		app.getHeight();
+		app.getList('bodyType');
+		app.getList('eyesColor');
+		app.getList('hairColor');
+		app.getList('hairLength');
+		app.getList('maritalStatus');
+		app.getList('children');
+		app.getList('religions');
+		app.getList('smoking');
+		app.getList('occupation');
+		app.getList('education');
+		app.getList('lookingFor', true);
+		
+		
 		app.getRegions();
-		app.getReligions();
-		//app.getCities();
-		//app.getSexPreference();
+		//app.getReligions();
 	},
+	
+	
+	
+	
+	getList: function(entity, multiple){
+	
+		var entityContainer = [];
+		
+		entityContainer['religions'] = '.religionList';
+		entityContainer['children'] = '.childrenList';
+		entityContainer['maritalStatus'] = '.maritalStatusList';
+		entityContainer['bodyType'] = '.bodyTypeList';
+		entityContainer['eyesColor'] = '.eyesColorList';
+		entityContainer['hairColor'] = '.hairColorList';
+		entityContainer['hairLength'] = '.hairLengthList';
+		entityContainer['smoking'] = '.smokingList';
+		entityContainer['children'] = '.childrenList';
+		entityContainer['education'] = '.educationList';
+		entityContainer['occupation'] = '.occupationList';
+		entityContainer['lookingFor'] = '.lookingForList';
+
+		
+		
+	
+	
+		$.ajax({
+		   url: app.apiUrl+'/api/v3/list/' + entity,
+			   error: function(error){
+			   console.log(JSON.stringify(error));
+			   
+			   },
+		   success: function(list, status, xhr){
+			   console.log(JSON.stringify(list));
+			   var html = '';
+			   if(multiple){
+			   html = '<fieldset data-role="controlgroup">';
+			   for(var i in list.items){
+			   var item = list.items[i];
+			   html = html + '<input name="' + entity + 'Id" type="checkbox" id="check-sex' + item.itemId  + '" value="' + item.itemId  + '"><label for="check-sex' + item.itemId  + '">' + item.itemName + '</label>';
+			   }
+			   html = html + '</fieldset>';
+			   }
+			   else{
+			   html = '<select name="' + entity + 'Id" id="' + entity + 'Id"><option value="">בחרו</option>';
+			   for(var i in list.items){
+			   var item = list.items[i];
+			   html = html + '<option value="' + item[0]  + '">' + item[1] + '</option>';
+			   }
+			   html = html + '</select>';
+			   }
+			   app.container.find(entityContainer[entity]).html(html).trigger("create");
+			   
+			   console.log(entity + 'Id');
+		   }
+		});
+	},
+	
+	
+	
+	getHeight: function(){
+		var html = '';
+		html = html + '<select name="userHeight" id="userHeight"><option value="">בחרו</option>';
+		for (var i = 100; i <= 250; i++) {
+			html = html + '<option value="' + i + '">' + i + '</option>';
+		}
+		html = html + '</select>';
+		
+		app.container.find('.heightList').html(html).trigger("create");
+	},
+	
+	
+	
+
+	
+	
 	
 	contactUs: function(){
 		window.scrollTo(0, 0);
 		app.showPage('contact_page');
 	},
+
+
+	sendMessageToAdmin: function(){
+	
+		var userId = window.localStorage.getItem("userId");
+		var messageToAdmin = $('#messageToAdmin').val();
+	
+		if(!messageToAdmin.length){
+			return;
+		}
+		
+		app.startLoading();
+	
+		$.ajax({
+		   url: app.apiUrl+'/api/v3/contactUs',
+		   type: 'Post',
+		   contentType: "application/json; charset=utf-8",
+		   data: JSON.stringify({
+				userId: userId,
+				messageToAdmin: messageToAdmin,
+			}),
+		   error: function(error){
+			   alert(JSON.stringify(error));
+			   app.stopLoading();
+		   },
+		   success: function(response, status, xhr){
+			   app.stopLoading();
+			   $('#messageToAdmin').val('');
+			   app.alert('תודה. ההודעה נשלחה');
+			   app.back();
+		   }
+		});
+	},
+	
+
+	
+	
+	
 	
 	
 	sendContactForm: function(){
-	
+		
+		/*
 		if(!$('#contactEmail').val().length){
-			alert('דוא"ל אינו תקין');
+			app.alert('דוא"ל אינו תקין');
 			return false;
 		}
 	
 		if(!$('#contactSubject').val().length){
-			alert('נושא אינו תקין');
+			app.alert('נושא אינו תקין');
 			return false;
 		}
 	
 		if(!$('#contactText').val().length){
-			alert('הודעה אינה תקינה');
+			app.alert('הודעה אינה תקינה');
 			return false;
 		}
+		*/
+		
+		app.startLoading();
 	
 		var data = $('#contactForm').serializeObject();
+		
+		//lert(1);
+		
+		//return;
 	
 		$.ajax({
-			url: 'http://m.kosherdate.co.il/api/v1/user/contact',
+			url: app.apiUrl+'/api/v3/user/contact',
 			type: 'Post',
 			data: JSON.stringify(data),
 			error:function(response){
-			   //alert(JSON.stringify(response));
+			   console.log("ERROR: " + JSON.stringify(response));
 			},
 			success: function(response){
+			   console.log(JSON.stringify(response));
 			   if(response.contact == "1"){
 					alert('הודעה נשלחה בהצלחה');
 					$('#contactEmail').val("");
@@ -2048,74 +2626,3 @@ window.addEventListener('load', function() {
 }, false);
 
 
-//======================================================== FASTCLICK
-function FastButton(element, handler) {
-   this.element = element;
-   this.handler = handler;
-   element.addEventListener('touchstart', this, false);
-};
-FastButton.prototype.handleEvent = function(event) {
-   switch (event.type) {
-      case 'touchstart': this.onTouchStart(event); break;
-      case 'touchmove': this.onTouchMove(event); break;
-      case 'touchend': this.onClick(event); break;
-      case 'click': this.onClick(event); break;
-   }
-};
-FastButton.prototype.onTouchStart = function(event) {
-
-event.stopPropagation();
-   this.element.addEventListener('touchend', this, false);
-   document.body.addEventListener('touchmove', this, false);
-   this.startX = event.touches[0].clientX;
-   this.startY = event.touches[0].clientY;
-isMoving = false;
-};
-FastButton.prototype.onTouchMove = function(event) {
-   if(Math.abs(event.touches[0].clientX - this.startX) > 10 || Math.abs(event.touches[0].clientY - this.startY) > 10) {
-      this.reset();
-   }
-};
-FastButton.prototype.onClick = function(event) {
-   this.reset();
-   this.handler(event);
-   if(event.type == 'touchend') {
-      preventGhostClick(this.startX, this.startY);
-   }
-};
-FastButton.prototype.reset = function() {
-   this.element.removeEventListener('touchend', this, false);
-   document.body.removeEventListener('touchmove', this, false);
-};
-function preventGhostClick(x, y) {
-   coordinates.push(x, y);
-	//alert('1');
-   window.setTimeout(gpop, 2500);
-};
-function gpop() {
-   coordinates.splice(0, 2);
-};
-function gonClick(event) {
-   for(var i = 0; i < coordinates.length; i += 2) {
-      var x = coordinates[i];
-      var y = coordinates[i + 1];
-      if(Math.abs(event.clientX - x) < 25 && Math.abs(event.clientY - y) < 25) {
-         event.stopPropagation();
-         event.preventDefault();
-      }
-   }
-};
-document.addEventListener('click', gonClick, true);
-var coordinates = [];
-function initFastButtons() {
-new FastButton(document.getElementById("mainContainer"), goSomewhere);
-};
-function goSomewhere() {
-var theTarget = document.elementFromPoint(this.startX, this.startY);
-if(theTarget.nodeType == 3) theTarget = theTarget.parentNode;
-
-var theEvent = document.createEvent('MouseEvents');
-theEvent.initEvent('click', true, true);
-theTarget.dispatchEvent(theEvent);
-};
-//========================================================

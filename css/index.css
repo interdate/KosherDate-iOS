@@ -225,9 +225,9 @@ a{
 	margin-top:8px;
 }
 
-#user_input input, #pass_input input, .regInput input{
+#user_input input, #pass_input input, .regInput input, .regInput textarea{
 	width:165px;
-	color:#c8c8c9;
+	color:#000;
 	font-size:16px;
 	font-weight: bold;
 	height:38px;
@@ -261,6 +261,11 @@ a{
 	border:0px;
 	background: #ececec;	
 }
+
+.regInput textarea {
+	height: 100px;
+}
+
 
 /*
 .regInput input{
@@ -312,6 +317,8 @@ a{
 	text-decoration:none;   	
 }
 
+
+/*
 #login{
 	width:150px;
 	height:55px;
@@ -320,6 +327,7 @@ a{
 	float:right;	
 	margin-right:10px;
 }
+ */
 
 #grey_line{
 	width:100%;
@@ -1372,7 +1380,16 @@ a .mail_section{
 	background:#fbfdef; 
 }
 
+.noPicture{
+	width: 33%;
+}
 
+.noPicture img{
+	width:100%;
+	min-height:88px;
+	/*float:left;*/
+	border: 2px solid #fff;
+}
 
 
 #user_pictures{
@@ -1658,6 +1675,8 @@ a .mail_section{
 #edit_profile_page,
 #EULA_page,
 #report_abuse_page,
+#recovery_page,
+#contact_us_page,
 .cityInp{
 	display:none;   
 }
@@ -1722,7 +1741,6 @@ a .mail_section{
 #bannerLink .ui-btn{border-radius:10px;height:60px;line-height:40px;}
 #bannerLink img,#bannerLink button{margin-right:-8px;}
 #uploadDiv .ui-btn{margin-bottom:15px;}
-#login_page .ui-btn{font-size:23px;border-radius:15px;min-width:110px;}
 #upload_image_page .ui-btn{margin-top:20px;}
 #uploadDiv .ui-btn:nth-child(1){margin-top:5%;}
 #login_page{margin-top:0px;}
