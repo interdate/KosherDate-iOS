@@ -1,0 +1,1482 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    
+    <meta http-equiv="Content-type" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>KosherDate</title>
+    	 
+ 	
+ 	<!-- <link rel="stylesheet" href="js/jquery.mobile-1.3.1/jquery.mobile-1.3.1.min.css" />  -->
+ 	<link rel="stylesheet" href="js/rtl/rtl.jquery.mobile-1.3.0.min.css" />
+ 	<link rel="stylesheet" href="js/jquery.mobile-1.3.1/kosherdate-theme.min.css" /> 	
+	<link rel="stylesheet" href="css/index.css" />    
+	
+    <script src="js/jquery-1.7.2.min.js"></script>
+	
+	<script src="cordova.js"></script>
+	<script src="js/fastclick.js"></script>
+	<script src="js/index.js"></script>
+	<script src="js/pswp.js"></script>
+	<script src="js/rtl/rtl.jquery.mobile-1.3.0.min.js"></script>
+	
+	
+	<!-- Core JS file -->
+	<script src="js/photoswipe/photoswipe.min.js"></script>
+	
+	<!-- UI JS file -->
+	<script src="js/photoswipe/photoswipe-ui-default.min.js"></script>
+	
+	<!-- Core CSS file -->
+	<link rel="stylesheet" href="js/photoswipe/photoswipe.css">
+		
+	<!-- Skin CSS file (styling of UI - buttons, caption, etc.)
+	 In the folder of skin CSS file there are also:
+	 - .png and .svg icons sprite,
+	 - preloader.gif (for browsers that do not support CSS animations) -->
+	<link rel="stylesheet" href="js/photoswipe/default-skin/default-skin.css">
+	
+	<link rel="stylesheet" href="js/swiper/css/swiper.min.css">
+	<script src="js/swiper/js/swiper.jquery.min.js"></script>
+	
+</head>
+
+<body onLoad="onBodyLoad();">
+	<input type="hidden" id="back_page" value="main_page" />
+	<div data-role="page" class="page" id="mainContainer">
+		<!--Start Header-->
+		
+		<div id="header">
+			<div id="logo" onclick="app.chooseMainPage();"></div>
+			<div class="new_mes" onclick="app.pageNumber = 1; app.getMessenger();"><div class="text_mes">תיבת הודעות</div><div class="new_mes_count2"></div></div>
+			<div id="top_right_buttons">
+				<div id="sign_up" onclick="app.register();"></div>
+				<div id="contact" onclick="app.contact();"></div>
+				<div id="back" onclick="app.back();"></div>				
+			</div>
+			<div id="top_left_buttons">					
+				<div id="logout" onclick="app.logout();"></div>
+			</div>
+			<div id="likesNotifications" onclick="app.getLikesNotifications();">
+				<div id="likesCount" class="hidden"></div>
+			</div>
+		</div>
+		<!--Stop Header-->
+		
+		
+		<!--Start Area Results Page -->
+		<div id="do_likes_page"  class="appPage">
+			
+			<!-- Slider main container -->
+			<div class="swiper-container">
+				<!-- Additional required wrapper -->
+				<div class="swiper-wrapper">
+					<!-- Slides -->
+					<!--<div class="swiper-slide"></div>
+					<div class="swiper-slide"></div>
+					<div class="swiper-slide"></div>-->
+				</div>
+				
+				<!--
+				 <div class="swiper-pagination"></div>
+				 <div class="swiper-button-prev"></div>
+				 <div class="swiper-button-next"></div>
+				 <div class="swiper-scrollbar"></div>
+				 -->
+				
+				
+			</div>
+			
+			<div class="toolbar">
+				
+				<div class="box"><div class="unlike icon" onclick="app.test();"></div></div>
+				<div class="box"><div class="chat icon" onclick="app.getChatWith();"></div></div>
+				<div class="box"><div class="like icon" onclick="app.doLike();"></div></div>
+				
+			</div>
+			
+			
+		</div>
+		<!--End aria Results Page -->
+		
+		
+		<div id="bingo_page" class="appPage">
+			
+		</div>
+		
+		<!--<div style="width:100%; height:70px;"></div>-->
+		
+		<div id="beforeHead"></div>
+		<!--Start Login Page -->
+		<div id="login_page" class="appPage">
+			<div data-role="content" class="bg_white">
+				<div class="content_wrap"> 			
+					<div id="authForm" name="authForm" data-role="none">
+						<!-- mar_top_8 -->
+						<!-- <div id="user_txt" class="mar_top_8">אימייל או </br>כינוי באנגלית</div> -->
+						<div id="user_input"><input placeholder="הקלד שם משתמש או דוא”ל" type="text" name="email" class="email" value="" data-role="none" maxlength="50" /></div>
+						<div class="clear"></div>
+						<!-- <div id="pass_txt" class="lineHeight_50">סיסמה</div> -->
+						<div id="pass_input"><input placeholder="סיסמה" type="password" name="password" class="password" value="" maxlength="50" data-role="none" /></div>
+						<div class="clear"></div>
+						<!-- <label><input type="checkbox" name="remember_me" value="remember_me"  /> <span>remember me</span> </label>  -->
+						<!-- <div id="fog_pass"><a href="#" rel="external" data-ajax="false">I've forgot my password</a></div>  -->
+
+						<!--<div id="login" onclick="app.sendAuthData();" class="right"></div>-->
+						
+						<div class="right"><input type="button" value="כניסה" onclick="app.sendAuthData();" data-theme="a">
+						</div>
+						
+						<div class="left"><input type="button" value="שכחתי את הסיסמה" onclick="app.recovery();" data-theme="a"></div>
+						
+						<!--<div class="left mar_l_10"><input type="button" value="כניסה" onclick="app.sendAuthData();" data-theme="a"></div>-->
+						<div class="clear"></div>
+					</div>								
+				</div>				
+			</div>	
+			<!-- <div id="grey_line"></div>		
+			<div data-role="content" data-scroll="false" class="bg_user_pre">
+				<div class="content_wrap">				
+					<div class="user_data_preview" id="udp_0">						
+						<div class="user_photo_wrap">
+							<img src="#" alt="" class="user_photo" />						
+						</div> 
+						<a href="#"><span></span></a>
+						<div class="address"></div>
+						<div class="on">ON</div>					
+					</div>
+					<div class="user_data_preview" id="udp_1">						
+						<div class="user_photo_wrap">
+							<img src="#" alt="" class="user_photo" />						
+						</div> 
+						<a href="#"><span></span></a>
+						<div class="address"></div>
+						<div class="on">ON</div>					
+					</div>
+				</div>
+			</div>	 -->		
+		</div>
+		<!--End Login Page -->
+		
+		
+		<!--Start Main Page -->
+		<div id="main_page"  class="appPage">
+			<div data-role="content" data-scroll="false">
+				<div class="content_wrap">
+					<!-- <a href="#" class="mainBut" onclick="app.getOnlineNow();"><div id="friends_online"></div></a>
+					<a href="#" class="mainBut" onclick="app.getSearchForm();"><div id="search_friends"></div></a>
+					<a href="#" class="mainBut" onclick="app.getMyProfileData();"><div id="profile"></div></a>   
+					<a href="#" class="mainBut" onclick="app.getMessenger();" class="no_dec">
+						<div id="mail_box"><div id="new_mes_count"></div></div>
+					</a> -->
+					<ul>
+		                <li onclick="app.getSearchForm();"><a href="" title="title" id="searchRS">חיפוש חברים</a></li>
+		                <li onclick="app.getOnlineNow();"><a href="" title="title" id="onlineFri">חברים אונליין</a></li>
+		                <li onclick="app.pageNumber = 1;app.getMessenger();"><a href="" title="title" id="massBox">תיבת הודעות</a></li>
+		                <li onclick="app.getStatUsers('lookedMe');"><a href="" title="title" id="watchMe">צפו בי</a></li>
+						<li onclick="app.getUsersForLikes();">
+							<a href="" title="title" id="like_but">הזירה</a>
+							<div class="new"></div>
+						</li>
+		                <li onclick="app.getStatUsers('contactedThem');"><a href="" title="title" id="contactedThem">פניתי אליהם</a></li>
+		                <li onclick="app.getStatUsers('friends');"><a href="" title="title" id="myFavorite">המועדפים שלי</a></li>
+		                <!--<li onclick="app.getMyProfileData();"><a href="" title="title" id="myPro">פרופיל אישי</a></li>-->
+						<li onclick="app.getStatUsers('looked');"><a href="" title="title" id="Iwatch">צפיתי בהם</a></li>
+		                <li onclick="app.getEditProfile();"><a href="" title="title" id="editPro">עדכון פרופיל</a></li>
+		            </ul>
+					<div class="clear"></div>
+					<div id="mainMyProf" onclick="app.getMyProfileData();"><button data-role="none">פרופיל אישי</button></div>
+					<a href="#" id="bannerLink"><div id="why_subscr"><button data-role="none">לרכישת מנוי להץ כאן</button></div></a>
+					<div id="contactUs" onclick="app.showPage('contact_us_page');"><button data-role="none">צרו קשר</button></div>
+
+				</div>
+			</div>		
+		</div>
+		<!--End Main Page -->
+		
+		<!-- Start Recovery Page -->
+		<div id="recovery_page" class="appPage">
+			<div data-scroll="false" class="white">
+				<div class="content_wrap">
+					<h1>שלחו לי סיסמה</h1>
+					<div class="dots"></div>
+					<div data-role="none" id="form_recovery">
+						<input type="hidden" name="page" data-role="none" value="recovery" />
+						<!--<label for="email">Correo Electrónico</label>-->
+						<div id="user_input"><input id="user" class="inpi" placeholder="דואל" type="text" name="email" data-role="none" style="direction: ltr;" /></div>
+						<div class="clear" data-role="none"></div>
+						<button class="form_button" data-theme="a" onclick="app.sendRecovery();">המשך</button>
+						<div class="clear"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Recovery Page -->
+		
+		
+		<!--Start Users List Page -->
+		<div id="users_list_page"  class="appPage">
+			<div data-role="content" data-scroll="false">
+				<div class="sortButton" id="sortByDistance">
+					<div class="bg_button" onclick="app.sortByDistance();">
+						<!--<img class="left" src="images/bg_button_l.png" />-->
+						<div class="but_c">מי קרוב אלי</div>
+						<!--<img class="left" src="images/bg_button_r.png" />-->
+					</div>
+					<!-- <input type="button" onclick="app.sortByDistance();" value="מי קרוב אלי" data-theme="a"> -->
+				</div>
+				<div class="sortButton" id="sortByEntranceTime">
+					<div class="bg_button" onclick="app.sortByEntranceTime();">
+						<!--<img class="left" src="images/bg_button_l.png" />-->
+						<div class="but_c">לתוצאות הקודמות</div>
+						<!--<img class="left" src="images/bg_button_r.png" />-->
+					</div>
+					<!-- <input type="button" onclick="app.sortByEntranceTime();" value="לתוצאות הקודמות" data-theme="a"> -->
+				</div>
+				<div class="clear"></div>
+				<div class="content_wrap"></div>					
+			</div>
+		</div>
+		<!--End Users List Page -->		
+		
+		
+		<!--Start My Profile Page -->
+		<div id="my_profile_page" class="appPage">					
+			<div class="myProfileWrap">
+				<div data-role="content" data-scroll="false" class="myProf">
+					<h1>הפרופיל שלי</h1>
+					<div class="dots"></div>				
+					<div id="my_info_wrap">
+						<div id="my_info">
+							<div class="special4"></div>
+							<div class="user_pic right">
+								<img alt="" src="" />										
+							</div>
+							<div class="txt">					
+								<strong><span></span></strong><br />
+								<span></span><br />						
+							</div>
+						</div>
+					</div>
+					<div id="my_buttons">
+						<br />						
+						<div id="get_stat_div"><button data-theme="a" id="get_stat">סטטיסטיקה</button></div>	
+						<div id="upload_image_div"><button data-theme="a" id="upload_image">נהל תמונות</button></div>											
+					</div>
+				</div>
+			<!-- <div class="grey_line2"></div> -->
+				<div data-role="content" data-scroll="false" id="statistics">
+					<div class="stat_side">
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('addedMeToFriends');">צורפתי למועדפים<!-- Added You To Friends --></div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('addedMeToFriends');">154</div>
+						</div>
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('contactedThem');">פניתי אליהם<!-- Contacted You --></div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('contactedThem');">229</div>
+						</div>
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('looked');"><!-- Viewed Your Profile -->צפיתי בהם</div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('looked');">2</div>
+						</div>
+					</div>
+					<div class="stat_side">
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('friends');">מועדפים<!-- Added To Friends --></div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('friends');">55</div>
+						</div>
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('blackList');"><!-- Added To Black List -->רשימה שחורה</div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('blackList');">118</div>
+						</div>
+						<div class="items_wrap">
+							<div class="stat_title" onclick="if($(this).next().text()!='0')app.getStatUsers('contactedMe');">פנו אלי<!-- Contacted --></div>
+							<div class="stat_value" onclick="if($(this).text()!='0')app.getStatUsers('contactedMe');">3</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="uploadDiv">
+					<div data-role="content" data-scroll="false">
+						<button class="take_a_photo" data-theme="a" onclick="app.capturePhoto(app.pictureSource.CAMERA, app.destinationType.FILE_URI);">הפעל מצלמה</button>
+						
+						<button class="choose_from_library" data-theme="a" onclick="app.capturePhoto(app.pictureSource.PHOTOLIBRARY, app.destinationType.FILE_URI);">תמונה מגלריה</button>
+						
+						<button class="my_images" data-theme="a" onclick="app.displayUserImages();">תמונות שלי</button>
+						<!-- 
+						<div class="up_buttons take_a_photo" onclick="app.capturePhoto(app.pictureSource.CAMERA, app.destinationType.FILE_URI);"></div>
+						<div class="up_buttons choose_from_library" onclick="app.capturePhoto(app.pictureSource.PHOTOLIBRARY, app.destinationType.FILE_URI);"></div>
+						<div class="up_buttons my_images" onclick="app.displayUserImages();"></div>
+						-->						
+						<!-- <img src="images/welcome.jpg" alt="" id="myNewPhoto" />  -->
+						<!-- <script>
+							$(document).ready(
+								function(){			
+									$('#myNewPhoto').Jcrop({
+										onChange: showPreview,
+										onSelect: showPreview,
+										aspectRatio: 1
+									});   	
+								}
+							);
+							function showPreview(coords)
+							{
+								var rx = 100 / coords.w;
+								var ry = 100 / coords.h;
+								$('#preview').css({
+									width: Math.round(rx * 500) + 'px',
+									height: Math.round(ry * 370) + 'px',
+									marginLeft: '-' + Math.round(rx * coords.x) + 'px',
+									marginTop: '-' + Math.round(ry * coords.y) + 'px'
+								});
+							}
+						</script>-->
+					</div>
+				</div>
+			</div>
+		</div> 
+		<!--End My Profile Page -->
+		
+		
+		<!--Start Search From Page -->
+		<div id="search_form_page"  class="appPage">
+			<div data-role="content" data-scroll="false">
+				<div class="content_wrap">
+					<h1>חיפוש חברים</h1>
+					<div class="dots"></div>
+					<form action="" method="post" id="searchForm" name="searchForm">
+						<div id="regions_wrap">
+							<div class="sf_txt">איזור</div>
+							<div class="sf_sel_wrap regionsList"></div>					
+						</div>
+						<div class="clear"></div>
+						<div id="religion_wrap"> 
+							<div class="sf_txt">השקפה</div>
+							<div class="sf_sel_wrap religionList"></div>	
+						</div>				
+						<div class="clear"></div>	 	
+						<div class="sf_txt" id="birth_wrap">גיל</div>
+						<div class="sf_sel_wrap">
+							<div class="sf_txt2">מ</div>
+							<div class="sf_sel_wrap2 age_1"></div> 
+							<div class="sf_txt2">עד</div>
+							<div class="sf_sel_wrap2 age_2"></div>
+						</div>
+						<!--<div class="sf_txt mar_top_13">מין:</div>
+						<div class="sf_sel_wrap gen">
+							<fieldset data-role="controlgroup" data-type="horizontal">
+								<input type="radio" name="gen" id="radioM" value="1" checked="checked">
+								<label for="radioM">זכר</label>
+								<input type="radio" name="gen" id="radioF" value="0">
+								<label for="radioF">נקבה</label>
+							</fieldset>
+						 	
+						</div>-->
+						<div class="sf_txt mar_top_13">כינוי</div>
+						<div class="sf_sel_wrap">
+							<input type="text" class="nickName" value="" />
+						</div>
+						<div id="right_buttons">										
+							<input type="button" data-theme="a" value="חיפוש" onclick="app.search();">
+						</div>
+						<div class="clear"></div>
+					</form>
+				</div>					
+			</div>
+		</div>
+		<!--End Search From Page -->
+		
+		
+		
+		<!--Start Profile Page -->
+		<div id="user_profile_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>הפרופיל של <span></span></h1>
+					<div class="dots"></div>
+					<div id="user_profile">
+						<div id="user_pictures">
+							
+							
+							<div class="my-gallery" itemscope itemtype="http://schema.org/ImageGallery">
+								
+							</div>
+							
+							<div class="noPicture center hidden">
+								<img alt="" src="">
+							</div>
+							
+							
+							
+							<!--
+							<div class="pic_wrap" style="z-index:555;">
+								<a href="#" class="fancybox" rel="images">
+									<img src="" alt="" id="pic1" />
+								</a>
+								<div class="gal_top_icons">				
+									<div class="special3 left"></div>
+									<div class="blue_star left"></div>
+								</div>
+								<div class="on5"></div>
+								<div class="distance_value"><span></span></div>
+							</div>
+							<div class="pic_wrap">
+								<a href="#" class="fancybox" rel=""><img src="" id="pic2" /></a>
+							</div>
+							<div class="pic_wrap">
+								<a href="#" class="fancybox" rel=""><img src="" id="pic3" /></a>
+							</div>
+							 -->
+							
+						</div>
+						<div class="clear"></div>
+						<div id="user_details"></div>
+					</div>
+				</div>					
+			</div>		
+		</div>
+		<!--End Profile Page -->					
+		
+		
+		<!--Start User Likes Page -->
+		<div id="likes_notifications_page" class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>התראות מהזירה</h1>
+					<div class="dots"></div>
+					<div class="notText">
+						זה המקום בו תוכלו לקבל התראות בכל פעם שמישהו בזירה פירגן לתמונה שלכם.
+						<br>
+						הודעת בינגו! תופיע במידה ושניכם פירגנתם אחד לשני.
+					</div>
+					<div class="notifications_wrap">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--End User Likes Page -->
+		
+		
+		<!--Start Messenger Page -->
+		<div id="messenger_page"  class="appPage"> 
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>תיבת הודעות</h1>
+					<div class="dots"></div>
+					<div class="chats_wrap"></div>			
+				</div>					
+			</div>		
+		</div>
+		<!--End Messenger Page -->		
+		
+		
+		<!--Start Chat Page -->
+		<div id="chat_page"  class="appPage"> 
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>שיחה עם <span></span></h1>
+					<div class="dots"></div>
+					<div class="sendMessDiv">
+						<div class="sendMessButDiv"><button class="sendMes" data-theme="a" onclick="app.sendMessage();">שלח</button></div>
+						<div class="messField"><textarea id="message"></textarea></div>
+					</div>
+					<div class="clear"></div>
+					<div class="chat_wrap"></div>			
+				</div>					
+			</div>		
+		</div>
+		<!--End Chat Page -->
+		
+		<!--Start Edit Profile Page -->
+		<div id="edit_profile_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>עריכת פרופיל</h1>
+					<div class="dots"></div>
+					<div class="clear"></div>
+					<button class="my_images" data-theme="a" onclick="app.displayUserImages();">תמונות שלי</button>
+					<div class="edit_wrap">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--End Edit Profile Page -->
+		
+		<!--Start Delete Images Page -->
+		<div id="delete_images_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>תמונות שלי</h1>
+					<div class="dots"></div>
+					<div class="imagesButtonsWrap">	
+						<button class="take_a_photo" data-theme="a" onclick="app.capturePhoto(app.pictureSource.CAMERA, app.destinationType.FILE_URI);">הפעל מצלמה</button>
+						<button class="choose_from_library" data-theme="a" onclick="app.capturePhoto(app.pictureSource.PHOTOLIBRARY, app.destinationType.FILE_URI);">תמונה מגלריה</button>
+						<!-- 
+						<div class="up_buttons take_a_photo" onclick="app.capturePhoto(app.pictureSource.CAMERA, app.destinationType.FILE_URI);"></div>
+						<div class="up_buttons choose_from_library" onclick="app.capturePhoto(app.pictureSource.PHOTOLIBRARY, app.destinationType.FILE_URI);"></div>
+						-->
+						<div class="dots"></div>						
+					</div>
+					<div class="imagesListWrap"></div>
+				</div>					
+			</div>		
+		</div>
+		<!--End Delete Images Page -->
+		
+		
+		<!--Start EULA Page -->
+		<div id="EULA_page"  class="appPage">
+			<div data-role="content" data-scroll="false">
+				<div class="content_wrap">
+					<h1>תנאי שימוש באפליקציה</h1>
+					<div class="dots"></div>
+					
+					<div style="padding-bottom: 80px;color:#c8c8c9;">
+						בתנאים אלה המונחים תוכן או תכנים כוללים "מידע" מכל מין וסוג, לרבות תוכן מילולי, קולי, חזותי, אור קולי, או כל שילוב שלהם וכן הפצתם, דרך הצגתם, עיצובם, עריכתם, עיבודם לרבות, אך לא רק, צילום, תמונה, הנפשה, איור, דמות, תרשים, הדמיה, דגימה, קובץ קולי, סרטון, קובץ, קוד מחשב, כל תוכנה, פרוטוקול, יישום, סימן, סמל, מאגר נתונים, כל תו ואייקון.
+						
+						
+						האתר קושרדייט פועל באמצעות כתובת האינטרנט http://koserdate.co.il (להלן:"האפלקציה"). הגלישה באתר והשימוש בתכניו ובשירותיו מעיד על הסכמתך למלוא התנאים כמפורט להלן. יכול ותמצאי באתר תכנים נוספים שלהם כללים שונים המצטרפים לכללים המצוינים בתנאי השימוש. התנאים הבאים חלים על השימוש באתר, בתכנים ובשירותים הניתנים בו באמצעות מכשיר סלולארי, מחשב כף יד, מחשב או מכשיר תקשורת אחר, כמו כן הם חלים על השימוש באתר, בין באמצעות רשת האינטרנט ובין באמצעות כל רשת או אמצעי תקשורת אחר.
+						האתר
+						
+						אתר קושרדייט, בבעלות החברה, לא יהיה אחראי לתכנים ו/או לשירותים ו/או לפרסומים המתפרסמים בו על ידי הגולשות ו/או על ידי כל אדם ו/או גוף אחר. עסקה שתעשה, אם תעשה, עם האתר, תסוכם ישירות בין הגולשת לאתר. האתר לא ישא בכל אחריות לשירותים שיוצעו במודעות המתפרסמות באתר ולרכישות, אם יהיו, שיעשו בשל פרסומים אלו, ולא תיקח חלק במחלוקות בין גולשות ו/או כל אדם לבין האתר, באם יהיו. הגולשת ו/או המשתמשת באתר מצהירה בזאת כי היא מוותרת בזאת וכי אין ולא תהיה לה כל תביעה ו/או טענה ו/או דרישה כלפי האתר בגין, תכניו והפרסומים בו, וכי השימוש באתר על כל שירותיו נעשה על אחריותה הבלעדית.
+						
+						
+						השימוש באתר:
+						
+						הנך רשאית להשתמש בתכנים ובשירותים שמסופקים על ידי האתר ורק אם את עומדת בתנאים הבאים:
+						1. ההוראות המצוינות להלן יתווספו על כל הוראת אחרת המופיעה בהסכמים מקוונים הנלווים לשירותים באתר.
+						2. הנך בת 18 שנה ומעלה.
+						3. הנך רשאית להשתמש באתר למטרות אישיות – פרטיות בלבד. אין להעתיק, להשתמש או לאפשר לאחרים להשתמש בתכני האתר, למטרות עסקיות שמטרתם רווח, לרבות בפרסומים, פרסומים אלקטרוניים, דפוס וכיוצ"ב, תהיה המטרה אשר תהיה.
+						4. אין להציג תכנים מה"אתר" בכל דרך שהיא, ובכלל זה, באמצעות תוכנה, מכשיר או בכל דרך אחרת המחסירה תכנים ו/או המשנה את עיצובה באתר.
+						5. האתר לא ישא בכל אחריות לכל נזק שייגרם כתוצאה מכל קישור לא חוקי לתכנים של האתר. אין לעשות קישורים לתכני החברה ואין להציג או לפרסם תכנים אלא אם יהיה הקישור לדף האינטרנט של החברה כפי שהוא במלואו. במסגרת זו, חל איסור לקשר לתכני "אתר" במנותק מדפי האינטרנט שבהם הם מופיעים באתר. בנוסף לאמור, אין לשנות את מיקומה, להסתיר, לסלף את כתובת האתר ובכל מקרה חובה לשמור על מיקומה המדויק בדף האינטרנט. החברה רשאית לנקוט בכל הליך חוקי על מנת לבטל קישור כאמור, בהתאם לשיקול דעת הבלעדי, ולך לא תהא כל טענה ו/או דרישה ו/או תביעה כלפי החברה בעניין זה.
+						6. לא תעשה בתכני האתר ו/או בשירות שניתן שימוש אשר יהיה בהם בכדי להטריד ו/או לפגוע ו/או להשמיץ ו/או להוציא דיבה ו/או לשון הרע ו/או בכדי להעליב ו/או כל פעולה שאינה בהתאם לחוק.
+						7. אין לאפשר או להפעיל כל אמצעי כגון תוכנות CRAWLERS ,ROBOTS לשם העתקה, חיפוש, סריקה, יצירת לקט, מאגר, אוסף של תכנים מתוך "אתר".
+						8. אין לקשר ל"אתר" מכל אתר המכיל תכנים המנוגדים לכל דין, גזענים או מפלים, תכנים  פורנוגראפיים ו/או אתרים המנוגדים לחוק.
+						9. אין לשלוח מכתבי שרשרת ו/או לעשות כל שימוש יכול ויפגע בזכות לפרטיות ו/או בכל זכות אחרת.
+						10. אין להשתמש בתכנים שמועלים לאתר על מנת לפרסם ו/או לשווק ו/או להפיץ ו/או לקדם כול חומר
+						11. אין להציג תכנים מ"אתר" בתוך מסגרת סמויה או גלויה.
+						12. אין להעביר כל מידע שקיבלת באמצעות האתר לאדם ו/או גוף אחרים אלא אם ניתן אישור מפורש לכך על ידי האתר ו/או האדם אשר סיפק לך את המידע.
+						13. אין לצרף הקלטות, הודעות, תמונות, קבצים או לעשות שימוש באתר אשר יהיו בניגוד לכל חוק ו/או יכול ויפגעו בכל צד ג' ו/או יפרו זכות יוצרים ו/או סימני מסחר ו/או זכות לפרטיות ו/או כל זכות אחרת.
+						14. אין לעשות שימוש בתכנים המופצים באתר: בפרסומות ו/או ברשת האינטרנט ו/או בכל מקום אחר, אלא אם כן ניתן לכך אישור בכתב מאת החברה. היה וגולשת תפר תנאי זה, תהיה צפויה למחיקה מיידית של כרטיסה וכספי המנוי לא יושבו. מבלי לפגוע בכל זכות אחרת העומדת לבעלי האתר, כול הודעה פרסומית שתשלח ללא אישור בכתב של האתר, תפצה הגולשת את בעלי אתר קושרדייט בפיצוי מוסכם בסך של 1,000 ₪ לכל הודעה שנשלחה.
+						15. אין לפרסם בכל צורה שהיא באזורי הפרטים הגלויים לכל חברות האתר, פרטי יצירת קשר מכל סוג שהוא!
+						
+						
+						
+						
+						תכנים שמשתמשים מוסרים לפרסום באתר
+						באתר מתפרסמים תכנים כגון: פורומים, תגובות לכתבות, קהילות, בלוגים, חדרי שיחה (צ'אטים) ושירותים נוספים, המאפשרים לכל גולשת להזין תכנים משלה.
+						יובהר כי כל זכות קניין רוחני ו/או זכות יוצרים ו/או כל זכות אחרת בתכנים המועלים על ידי המשתמשת לאתר, הינם שייכים לאותה משתמשת אשר העלתה אותם לאתר.
+						בנוסף, האתר אינו נושא בכל אחריות לתכנים שנכתבו, ואילו האחריות הבלעדית להם ולכל תוצאה הנובעת מהם, תהיה אשר תהיה חלה עליך המשתמשת ו/או הכותבת.
+						התכנים שתעבירי לפרסום יהיו חשופים לכל משתמשי האינטרנט, אך יש לזכור ולהדגיש כי התכנים אינם מתפרסמים מטעמו של האתר ולפיכך הוא אינו אחראי לדיוק, אמינות, איכות, מהימנות ושלמות המידע. המשתמשת באתר ובשירותי החברה מצהירה בזאת כי ידוע לה שכל מידע (כפי שפורט לעיל) אשר העלתה לצפייה באתר החברה הועלתה על ידה אישית והיא האחראית באופן בלעדי לתוכן המידע אותו העלתה לאתר החברה. כמו כן, האתר אינו אחראי לכל תוצאה שתיגרם מהשימוש וההסתמכות עליהם ובכל מקרה התכנים אינם מחליפים קבלת חוות דעת מקצועית ו/או עזרה מקצועית תהיה אשר תהיה.
+						
+						
+						עליך, המשתמשת, קיימת החובה כי כל התכנים אותם את כותבת יהיו חוקיים, ובין היתר ולמען הדוגמה בלבד, נאסר עליך לפרסם באתר את התכנים הבאים:
+						1. תוכן המזהה אנשים שלא כחוק.
+						2. כל תוכן הפוגע בפרטיותו או בשמו הטוב של אדם ו/או גוף.
+						3. כל תוכן המהווה לשון הרע, הוצאת דיבה וכיוצ"ב.
+						4. תוכן הידוע לך שהוא מטעה ו/או מוטעה ו/או כוזב ו/או מסולף.
+						5. תוכן המעודד ביצוע עבירה פלילית.
+						6. תוכן אשר יש בו משום אפליה, גזענות.
+						7. תוכן העלול להטעות צרכן.
+						8. תוכן הפוגע בזכויות קנייניות של אחר.
+						9. תוכן אשר עלול להוות בסיס לתביעה פלילית ו/או אזרחית.
+						10. תוכן אשר עלול לפגוע או לגרום נזק לכל אדם ו/או גוף.
+						11. תוכן הפוגע בסימן מסחר ו/או בזכויות יוצרים של אחר.
+						12. תוכן מעליב, גס רוח, טורדני, מאיים.
+						13. תוכן המזהה פרטי קטינים, כתובתם, דרכי התקשרות עמם.
+						14. תוכן שאינו חוקי.
+						15. תוכן המהווה הטרדה מינית ו/או עידוד לביצוע עבירה מעין זו.
+						16. תוכן אשר יש בו פרטים פורנוגראפיים הפוגעים באדם.
+						17. תוכן אשר מכיל בתוכו וירוס מחשב מכל סוג שהוא.
+						18. פרטי יצירת קשר מכל סוג שהוא באזורים הפתוחים והגלויים לכל חברות האתר.
+						
+						האתר רשאי לקצר, למחוק, לערוך, לקצר, לדחות פרסום כתבה ו/או הודעה בהתאם לשיקול דעתו הבלעדי וזאת מבלי שיצטרך ליתן הסבר לכך. בכל מקרה מסירת התכנים על ידך אינה מקנה לך זכות כלשהי לדרוש את פרסומם. בנוסף, האתר יהיה רשאי למנוע ממך פרסום כתבות ו/או הודעות נוספות באתר. הוראות סעיף זה באות בנוסף על זכויות האתר בהתאם לחוק ולפי כל דין.
+						הגולשת מצהירה בזאת כי מאשרת לחברה כברת רשות, להשתמש בכל דרך שהיא במידע אותו העלה ופרסם באתר החברה, שימוש לצורך סעיף זה ייחשב כהצגה של המידע באתר החברה ו/או פרסומו באינטרנט  ו/או פרסומו בכל אמצעי מדיה אחר, לצורכי החברה ולקידומה, וכל זאת על פי שיקול דעתה הבלעדי של החברה, וכל זאת ללא תשלום כלשהו לגולשת ו/או צורך בקבלת רשות ממנה לצורך ביצוע פרסום זה.
+						
+						נשיאה באחריות
+						הגולשת מתחייבת בזאת לשאת באחריות מלאה ביחס לתכנים שנמסרו לידה. הגולשת כאמור מתחייבת לפצות את החברה בגין כל תביעה ו/או דרישה ו/או נזק ו/או הפסד שייגרמו כתוצאה מאי קיום הוראות תנאי שימוש ו/או הפרת החוק ו/או מדרישת צד ג' כלשהו ו/או מפרסום מוטעה ומטעה, הקשור בצורה ישירה או עקיפה לתכנים אותם העלתה הגולשת לאתר החברה, וזאת לרבות הוצאות משפטיות. השיפוי כאמור, ישולם עם דרישתה הראשונה של החברה וזאת מבלי לגרוע מכל סעד אחר העומד לחברה על פי כל דין.
+						הגולש מצהיר בזאת ומתחייב כי הוא פוטר את החברה מכל תביעה ו/או דרישה ו/או נזק ו/או הפסד שייגרמו כתוצאה מאי קיום הוראות תנאי שימוש ו/או הפרת החוק ו/או מדרישת צד ג' כלשהו ו/או מפרסום מוטעה ומטעה, הקשור בצורה ישירה או עקיפה לתכנים אותם העלתה הגולשת לאתר החברה, וזאת לרבות הוצאות משפטיות.
+						
+						שירותים הטעונים רישום
+						השירותים הניתנים באתר טעונים רישום. בעת ההרשמה תתבקשי למסור פרטים אישיים כגון: שם פרטי, שם משפחה, תעודת זהות, דואר אלקטרוני, מספר טלפון נייד, מספר טלפון אחר, כתובת מגורים ועוד. האתר רשאי לקבוע מעת לעת, דרכי זיהוי נוספות או אחרות. עליך למסור רק פרטים נכונים ומדויקים והנך מאשרת בזאת את נכונות פרטיך. ראוי לציין, כי אין חובה על פי חוק למסור את הפרטים האמורים. במידה והנהלת האתר תתרשם כי חרגת מתנאי השימוש בו, יהיה האתר רשאי לבטל את רישומך, לחסום גישה, ושלא לאפשר לך להשתמש בשירות הטעון רישום לפי שיקול דעתו הבלעדי ולא תהיה לך כל טענה ו/או דרישה ו/או תביעה כספית ו/או אחרת בגין החלטה זו של האתר.
+						
+						שמירה ואבטחה
+						החשבון בו הנך משתמשת הנו אישי. הנך אחראית באופן בלעדי לכל פעילות ו/או שימוש בשירות שנעשה על ידי גולשות ו/או משתמשות אחרות העושות שימוש בסיסמתך ו/או בחשבונך.
+						
+						סוגי חברות
+						
+						חלק מהשירותים הניתנים באתר הנם בתשלום. למרות האמור, גולשת באתר יכולה לעשות שימוש בחלק מהשירותים ללא תשלום.
+						אורחים באתר: תתאפשר גישה מינימאלית לתכנים ללא תשלום.
+						חברות (ללא תשלום): תתאפשר גישה מורחבת לתכני האתר.
+						חברות בתשלום: תתאפשר גישה מלאה לתכני האתר.
+						
+						
+						שירות בתשלום
+						השימוש בחלק מתכני האתר ובתכניו הנו בתשלום, בעלות חודשית קבועה.
+						1. על הגולשת להירשם באתר על ידי מילוי טופס הפרטים. הגולשות יכולות לרכוש את המנוי באמצעות אשראי, שיקים, העברה בנקאית או מזומן. החברה שומרת לעצמה את הזכות לשנות את מדיניות התשלומים בכל עת ועל פי שיקול דעתה הבלעדי.
+						2. לאחר רכישת המנוי לא ניתן יהיה לבטלו ולא יינתנו החזרים גם אם לא השתמשת במנוי.
+						3. חידוש המנוי יעשה באופן אוטומאטי. ביטול המנוי הנו באחריותך הבלעדית. הנך מצהירה בזה כי את מסכימה לחידוש המנוי מדי חודש, ללא קשר עם עשית שימוש במנוי או אם לאו וללא הודעה חודשית של החברה אליך.
+						4. ניתן יהיה לבטל את החיוב החודשי הבא, דרך מערכת ביטול חידושים של אפל
+						5. המנוי אינו ניתן להעברה מחברה אחת לחברה אחרת.
+						
+						
+						
+						הפסקת השירות
+						על פי שיקול דעת בלעדי של החברה, תוכל היא לבטל בכל זמן, מבלי שנתנה התראה, מכל סיבה שהיא, את גישתך לשירות. מבלי לפגוע באמור בהסכם זה, כל פעילות שאינה חוקית או פעילות שעלולה לפגוע לדעת החברה, על פי שיקול דעתה הבלעדי בגולשות האתר ו/או גולשי האינטרנט, יהווה עילה להפסקת גישתך לאתר.
+						
+						
+						
+						העברת זכויות
+						השימוש במנוי הנו בלעדי. אסורה העברת זכויות, קוד, סיסמא וכיו"ב לכל אדם אחר.
+						
+						
+						
+						
+						תכנים מסחריים, פרסומות, מודעות, דואר אלקטרוני, SMS (להלן: תכנים)
+						האתר כולל פרסומות, מודעות ותכנים מסחריים רבים אחרים. התכנים כאמור נמסרים על ידי מפרסמים ו/או משתמשים. תכנים לצורך העניין, יכול שיהיו בתמונות בקול, בטקסט ובאמצעים נוספים. המשתמשת ו/או הגולשת מתירה לאתר להעביר את פרטיה למפרסמים המפרסמים מודעות ותכנים מסחריים.
+						האתר לא ישא בכל אחריות לתכנים מסחריים, תכנים שהועברו באמצעות דואר אלקטרוני,
+						ו - SMS ואשר יפורסמו באתר. האתר לא בודק, אינו כותב ואינו מוודא את אמיתותם ותוכנם של הפרסומים. האחריות הבלעדית לתכנים האמורים הנה על המפרסמים בלבד בין אם המדובר בחברה ו/או כל גוף ו/או אדם. פרסום התכנים באתר אינו מהווה עידוד ו/או המלצה לרכוש את התכנים. כל עסקה שתירקם בעקבות תכנים המתפרסמים באתר תסוכם ישירות בינך לבין מפרסם התוכן. האתר לא יהיה צד לעסקה ולא ישא באחריות למוצר ו/או לתוכן, אלא אם פורסם במפורש בגוף הפרסומות או בתקנון נוסף כי האתר הוא אשר מוכר את התוכן ו/או המוצר.
+						חברות באתר והסכמה לחוזה זה מאפשרת לבעלי האתר לשלוח כל אימייל או SMS לחברות האתר בכל נושא במשך כל זמן החברות באתר.
+						
+						
+						
+						שינויים באתר הפסקת השירות והעברת זכויות
+						החברה אינה מתחייבת בכל צורה שהיא כי השירותים אותם מספק האתר יינתנו ללא כל הפרעה וברציפות לאורך זמן בלתי מוגבל, ללא הפסקות, בבטחה וללא טעויות.
+						כמו כן, החברה אינה מתחייבת כי מחשביה יהיו חסינים מפני נזקים, כשלים טכניים כאלו או אחרים בתוכנה או בחומרה, בחברה עצמה או אצל מי מספקיה, היות והפעלת האתר כרוכה בשירותים של ספקים חיצוניים אשר עליהם אין לחברה כל אחריות למעשה או מחדל הנגרם על ידם ואשר גרם נזקו/או הפסד ו/או אובדן ו/או הוצאה ו/או הוצאה משפטית אשר ייגרמו למשתמש באתר החברה.
+						בהתאם לשיקול דעתה הבלעדי רשאית החברה המפעילה את האתר לסגור אותו, לשנות את מראהו, עיצובו, זמינותו, ולהעביר חלק או את כל זכויותיה וחובותיה לצד שלישי לפי בחירת החברה וכן כל דבר אחר כפי שיוחלט בחברה וכל זאת מבלי שתצטרך ליתן הודעה מראש למי מהגולשות. לא תהיה לך כל תביעה ו/או דרישה ו/או טענה כספית ו/או אחרת כלפי החברה ו/או מי מטעמה בגין הפסקת השירות או השינויים כאמור. החברה תעשה מאמץ סביר להודיע מראש לפני הפסקת השירות.
+						למען הסר ספק, היה ויועברו הזכויות כאמור לצד שלישי, תהיה החברה משוחררת מכל אחריות שהיא.
+						
+						
+						
+						אחריות החברה
+						לא תהיה לך כל טענה ו/או דרישה ו/או תביעה כלפי החברה בגין תוכן, תכונות ותגובות על התכנים. הגלישה והשימוש באתר הנם על אחריותך בלבד. החברה אינה אחראית ואינה מתחייבת כי לתכנים המתפרסמים תהיה היענות כלשהי. החברה לא יכולה לדעת אילו תגובות תקבל בשל פרסום התכנים ומי יגיב ולכן לא תשא כלפיך ו/או למי מטעמך באחריות כלשהי. החברה לא תהיה אחראית לכל שימוש שייעשה על ידי צד ג' בתכנים שיפורסמו על ידך בין אם פרסומם חוקי או בין אם לאו. כל החלטה שתתקבל על ידך בהסתמך על התכנים שהתפרסמו הנם באחריותך המלאה. החברה אינה מתחייבת כי תכני צד ג' המתפרסמים באתר יהיו מדויקים, איכותיים, נכונים. החברה לא תשא באחריות לכל תוצאה שנבעה מהם, שימוש בהם או מההסתמכות עליהם.
+						הגולשת מצהירה בזאת ומתחייבת כי היא פוטרת את החברה מכל תביעה ו/או דרישה ו/או נזק ו/או הפסד שייגרמו כתוצאה מאי קיום הוראות תנאי שימוש ו/או הפרת החוק ו/או מדרישת צד ג' כלשהו ו/או מפרסום מוטעה ומטעה, הקשור בצורה ישירה או עקיפה לתכנים אותם העלתה הגולשת לאתר החברה, וזאת לרבות הוצאות משפטיות.
+						התכנים באתר הכוללים תכנים המתפרסמים באמצעות דואר אלקטרוני, SMS, פורומים, קהילות וקבוצות דיון אינם מהווים תחליף לייעוץ מקצועי, אך אם החלטת להסתמך על תוכן כלשהו, עליך חלה האחריות הבלעדית לפעולותיך והתוצאות הנובעות מכך.
+						החברה לא תהיה אחראית לכל נזק שייגרם לך באם יופסק שירות האתר, ו/או יתרחש נזק, תקלה, הפרעה בשירות וכיו"ב אצלה ו/או אצל ספקיה.
+						
+						
+						
+						זכויות היוצרים והקניין הרוחני באתר:
+						זכויות היוצרים והקניין הרוחני, תכנים, עיצוב, תוכנות, יישומים, סימני המסחר, קוד מחשב, קבצי וידאו, טקסטים, קבצים קוליים, קבצים גראפיים וכל חומר אחר הכלול באתר הנן של החברה בלבד או של צד שלישי אשר הרשה לחברה שימוש בהם. אסורה ההפצה, העתקה, הצגה בפומבי, העברה לציבור, עיבוד, השכרה, מכירה במלואו או בחלקו, בין במישרין ובין בעקיפין, בכל אמצעי יהיה אשר יהיה, ואשר כולל בין היתר, אמצעי אלקטרוני, צילום, הקלטה, אמצעי מכאני, או בכל דרך אחרת וזאת מבלי שניתנה הסכמת החברה בכתב.
+						למען הסר ספק, החברה אינה אחראית בכל צורה שהיא להפרה של זכות קניין רוחני כלשהי, לרבות סימני מסחר, סודות מסחר, שמות מתחם וכתובות דואר אלקטרוני.
+						
+						
+						
+						תכני גולשות
+						זכות קניין רוחני ו/או זכות יוצרים שייכת ו/או תכנים אשר יועלו על ידי הגולשות הנם באחריותם ובבעלותם הבלעדית של הגולשות שהעלו את התכנים. הגולשות מצהירות כי ידוע להן שכל תוכן אשר נשלח על ידן הנו באחריותן הבלעדית והגולשות אחראיות לתוכן ההודעות. הגולשות מתחייבות שכל תוכן שתעברנה, יהיה חוקי.
+						הגולשת מצהירה כי ידוע לה שכל מידע ע"פ הגדרתה לעיל אשר מפורסמת באתר החברה הוא באחריותה המלאה והבלעדית של הגולשת אשר העלתה את המידע המסוים.
+						הגולשות מצהירות ומסכימות בזאת כי האתר ו/או מי מטעמו יעשו כל שימוש בתכנים האמורים ובכלל זה יפרסמו בעיתונים.
+						
+						
+						
+						התיישנות
+						המשתמשת באתר זה מסכימה בזאת, כי כל תביעה ו/או דרישה נגד החברה תוגבל לתקופה של 6 חודשים ממועד פרסומה ו/או הופעתה באתר. הצדדים רואים בכך הסכם לתקופת התיישנות כמשמעו בסעיף 19 לחוק ההתיישנות וזאת לאור אופיו הייחודי של האתר. למען הסר ספק, הוראה זו תגבר על כל הוראת דין אחרת. על אף האמור לעיל מובהר כי תקופת ההתיישנות בכל עילה אשר תהיה לחברה כלפי הגולשת ו/או המשתמשת לא תהיה לתקופה מקוצרת כאמור לעיל אלא על פי התקופה הקבועה בחוק.
+						
+						
+						
+						סמכות שיפוט ודין
+						סמכות השיפוט הבלעדית לבירור כל עניין ומחלוקת, מוקנית לערכאות המתאימות בעיר ירושלים בלבד. הדין שיחול הנו הדין הישראלי.
+						
+					</div>
+					
+					<div class="EULA_Buttons">
+						<!--
+						 <input type="button" onclick="app.acceptEULA(true);" value="Accept" data-theme="e">
+						 -->
+						
+						
+						<div class="EULA_Button">
+							<input type="button" onclick="app.acceptEULA(true);" value="Accept" data-theme="a">
+								</div>
+						<!--
+						 <div class="EULA_Button left">
+						 <input type="button" onclick="app.acceptEULA(false);" value="Decline" data-theme="e">
+						 </div>
+						 -->
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+		<!--End EULA Page -->
+		
+		
+		<!--Start Report Abuse Page -->
+		<div id="report_abuse_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>שלח דיווח</h1>
+					<div class="dots"></div>
+					
+					<strong style="color: #fff;">הערות</strong>
+					<textarea style="height:130px;" id="abuseMessage"></textarea>
+					<button data-theme="a" onclick="app.reportAbuse();">שלחו</button>
+					
+					
+				</div>
+			</div>
+		</div>
+		<!--End Report Abuse Page -->
+		
+		
+		
+		<!--Start Upload Image Page -->
+		<div id="upload_image_page"  class="appPage"> 
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>העלאת תמונה</h1>
+					<div class="dots"></div>
+					<div class="regInfo">
+							יש באפשרותך להעלות עד 4 תמונות. תמונות חדשות ממתינות לאישור האתר
+					</div>
+					<button class="take_a_photo" data-theme="a" onclick="app.capturePhoto(app.pictureSource.CAMERA, app.destinationType.FILE_URI);">הפעל מצלמה</button>
+					<button class="choose_from_library" data-theme="a" onclick="app.capturePhoto(app.pictureSource.PHOTOLIBRARY, app.destinationType.FILE_URI);">תמונה מגלריה</button>
+					<button class="my_images" data-theme="a" onclick="app.displayUserImages();">תמונות שלי</button>
+					<button class="continue" data-theme="a" onclick="app.chooseMainPage();">המשך</button>					
+				</div>					
+			</div> 	
+		</div>
+		<!--End Upload Image Page -->		
+		
+		
+		
+		
+		<!--Start Register Page -->
+		<div id="register_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>הרשמה</h1>
+					<div class="dots"></div>
+					<div class="regFormWrap">
+						<form id="regForm" data-role="none" onsubmit="return false;">
+							<div class="regTxt lineHeight_50">אימייל</div><div class="regInput"><input type="text" name="userEmail" id="userEmail" data-role="none" maxlength="50" /></div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50">סיסמה</div><div class="regInput"><input type="password" name="userPass" id="userPass" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+							<div class="regTxt mar_top_8">סיסמה בשנית</div><div class="regInput"><input type="password" name="userPass2" id="userPass2" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50">כינוי</div><div class="regInput"><input type="text" name="userNick" id="userNick" data-role="none" maxlength="50" /></div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50">מין</div>
+							<div class="regInput">
+								<select name="userGender" id="userGender" value="" data-iconpos="left" class="inpi2">
+									<option value="" >בחרו</option>
+									<option value="1" >גבר</option>
+									<option value="0" >אישה</option>
+								</select>
+							</div>
+							
+							
+							
+							
+							
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50" id="fName_wrap">שם פרטי</div>
+							<div class="regInput"><input type="text" name="userfName" onkeyup="app.delRed(this);" onclick="app.delRed(this);" id="userfName" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+
+							<div class="regTxt mar_top_8" id="lName_wrap">שם משפחה</div>
+							<div class="regInput"><input type="text" name="userlName" onkeyup="app.delRed(this);" onclick="app.delRed(this);" id="userlName" maxlength="50" data-role="none" /></div>
+							
+							
+							<div class="regTxt bold lineHeight_50">ת. לידה</div>
+							<div class="regInput">
+								<div id="birthDate" class="right"></div>
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50" id="regions_wrap">איזור</div>
+							<div class="regInput regionsList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50" id="cities_wrap">עיר</div>
+							<div class="regInput"><input type="text" name="userCity" id="userCity" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt mar_top_8">מצב משפחתי</div>
+							<div class="regInput maritalStatusList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt lineHeight_50">מספר ילדים</div>
+							<div class="regInput childrenList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50" id="religion_wrap">השקפה</div>
+							<div class="regInput religionList"></div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt lineHeight_50">השכלה</div>
+							<div class="regInput educationList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50">עיסוק</div>
+							<div class="regInput occupationList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							
+							
+							<div class="regTxt lineHeight_50">גובה</div>
+							<div class="regInput heightList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt lineHeight_50">מבנה גוף</div>
+							<div class="regInput bodyTypeList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt lineHeight_50">צבע עיניים</div>
+							<div class="regInput eyesColorList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50">צבע השיער</div>
+							<div class="regInput hairColorList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50">תסרוקת</div>
+							<div class="regInput hairLengthList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							<div class="regTxt lineHeight_50">הרגלי עישון</div>
+							<div class="regInput smokingList">
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							<div class="regTxt lineHeight_50">על עצמי</div>
+							<div class="regInput"><textarea name="aboutMe" id="aboutMe" data-role="none"></textarea></div>
+							<div class="clear"></div>
+							
+							
+							<div class="regTxt mar_top_8">את מי אני מחפש/ת</div>
+							<div class="regInput"><textarea name="lookingFor" id="lookingFor" data-role="none"></textarea></div>
+							<div class="clear"></div>
+							
+							<div class="regTxt mar_top_8">מה אני מחפש/ת</div>
+							<div class="sf_sel_wrap lookingForList">
+								
+								
+							</div>
+							<div class="clear"></div>
+							
+							
+							
+							
+							<br />
+							<br />
+							
+							
+							<div class="regTxt" style="width: 90%;">
+								
+								<span onclick="window.open('http://www.kosherdate.co.il/dyncpage.asp?pageId=7', '_blank', 'location=yes');" style="text-decoration:underline; font-weight:bold;">תנאי השימוש באתר
+								</span>
+								
+							</div>
+							
+							<br /><br />
+							
+							<div data-role="fieldcontain">
+								<fieldset data-role="controlgroup">
+									<input type="checkbox" name="confirm" id="confirm" class="custom" />
+									<label for="confirm">אני מסכים/ה לתנאי השימוש</label>
+								</fieldset>
+							</div>
+							
+							
+														
+							
+							
+							
+							<br />
+							<br />
+							
+							
+							
+							
+							
+						</form>
+						<div class="clear"></div>
+						<button data-theme="a" onclick="app.sendRegData();">הרשמה</button>
+						<br /><br />
+						<br /><br />
+						<br /><br />
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--End Register Page -->
+		
+		
+		
+		
+		
+		<!--Start Register Page -->
+		<!--
+		<div id="register_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>הרשמה</h1>
+					<div class="dots"></div>
+					<div class="regFormWrap">
+						<form id="regForm" data-role="none" onsubmit="return false;">
+							<input type="hidden" id="wrong_userNick" data-role="none" value="0" />
+							<input type="hidden" id="wrong_userEmail" data-role="none" value="0" />
+							<div class="regTxt lineHeight_50">כינוי</div><div class="regInput" style="widht:165px;position:reletive;float:right;">
+								<div class="userNickState">
+									<div class="userOk">פנוי</div>
+									<div class="userFailed">תפוס</div>
+								</div>
+								<input style="width:165px;" type="text" onkeyup="app.delRed(this);app.checkUserFields(this.id,this.value);" onclick="app.delRed(this);" name="userNick" id="userNick" data-role="none" maxlength="50" /></div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50">סיסמה</div><div class="regInput"><input type="password" onkeyup="app.delRed(this);" onclick="app.delRed(this);" name="userPass" id="userPass" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+							<div class="regTxt mar_top_8">סיסמה בשנית</div><div class="regInput"><input type="password" onkeyup="app.delRed(this);" onclick="app.delRed(this);" name="userPass2" id="userPass2" maxlength="50" data-role="none" /></div>
+							<div class="clear"></div>
+							<div class="regTxt mar_top_8">אימייל</div><div class="regInput" style="widht:165px;position:reletive;float:right;">
+								<div class="userEmailState">
+                                    <div class="userFailed">תפוס</div>
+								</div>
+								<input type="text" name="userEmail" onkeyup="app.delRed(this);app.checkUserFields(this.id,this.value);" onclick="app.delRed(this);" id="userEmail" data-role="none" maxlength="50" /></div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50">מין</div>
+							<div class="regInput">
+								<select name="userGender" id="userGender" value="" data-iconpos="left" class="inpi2" onkeyup="app.delRed(this);">
+									<option value>לבחור מין</option>
+	                                <option value="1" >גבר</option>
+	                                <option value="0" >אישה</option>
+	                            </select>
+								
+							</div>
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50" id="regions_wrap">איזור</div>				
+							<div class="regInput regionsList"></div>					
+							<div class="clear"></div>							
+							<div class="regTxt lineHeight_50" id="city_wrap">עיר</div>
+							<div class="regInput"><input type="text" name="cityName" onkeyup="app.delRed(this);" onclick="app.delRed(this);" id="userCityName" maxlength="50" data-role="none" /></div>					
+							<div class="clear"></div>
+							<div class="regTxt lineHeight_50" id="religion_wrap">השקפה</div>				
+							<div class="regInput religionList"></div>					
+							<div class="clear"></div>	 
+							<div class="regTxt lineHeight_50" id="fName_wrap">שם פרטי</div>
+							<div class="regInput"><input type="text" name="userfName" onkeyup="app.delRed(this);" onclick="app.delRed(this);" id="userfName" maxlength="50" data-role="none" /></div>					
+							<div class="clear"></div>
+							<div class="regTxt mar_top_8" id="lName_wrap">שם משפחה</div>
+							<div class="regInput"><input type="text" name="userlName" onkeyup="app.delRed(this);" onclick="app.delRed(this);" id="userlName" maxlength="50" data-role="none" /></div>					
+							<div class="clear"></div>
+							<div class="regTxt bold lineHeight_50" id="birth_wrap">ת. לידה</div>						
+							<div class="regInput">
+								<div id="birthDate" class="left"></div>
+							</div>
+							<div class="clear"></div>
+							
+						</form>
+						<button data-theme="a" onclick="app.sendRegData();">הרשמה</button>  
+						<br /><br />
+						<br /><br />
+						<br /><br />
+					</div>
+				</div>					
+			</div>		
+		</div>
+		-->
+		<!--End Register Page -->
+		
+		
+		
+		<!--Start Contact Us Page -->
+		<div id="contact_us_page"  class="appPage">
+			<div data-role="content">
+				<div class="content_wrap">
+					<h1>צרו קשר</h1>
+					<div class="dots"></div>
+					<div class="chats_wrap">
+						
+						<div class="regTxt">:הודעה</div>
+						<div class="clear"></div>
+						<textarea name="messageToAdmin" id="messageToAdmin" style="height:120px;"></textarea>
+						<div class="clear"></div>
+						<button class="sendMes" data-theme="a" onclick="app.sendMessageToAdmin();">שלחו</button>
+						
+						
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--End Contact Us Page -->
+		
+		
+		
+	
+	</div>
+	
+	<div class="clear"></div>
+	
+	
+	<div class="appTemplates">
+		
+		<!-- START Home Banner Template -->
+		<div id="homeBannerTemplate">
+			<div class="banners">
+				<a href="#" id="bannerLink2" onclick="[FUNC]"><div class="why_subscr">[BUTTON]</div></a>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<!-- END Home Banner Template -->
+		
+		<!-- START User Data Template -->
+			<div id="userDataTemplate">	
+				<div class="user_data">					
+					<div class="user_photo_wrap">							
+						<div class="user_pic" style="background: url([IMAGE]) no-repeat center;background-size:auto 100%;"></div>
+					</div>
+					<div class="user_short_txt">
+						<strong>[USERNICK], <span>[AGE]</span></strong><br />						
+						<span> [CITY]</span><br />					
+						[ABOUT]							
+					</div>				
+					<div class="send_mes" onclick="app.getChat([USER_ID],'[USERNICK]');"><span>שליחת הודעה</span></div>
+					<div class="on2"></div>
+					<div class="on1"></div>
+					<a href="" data-transition="slide">
+						<div class="gal_top_icons">				
+							<!-- Is Paying -->		
+							<div class="special3 left"></div>
+							<!-- Is New -->							
+							<div class="blue_star left"></div>
+						</div>
+					</a>					
+					<div class="distance_value"><span></span></div>				
+				</div>
+			</div>
+			<!-- END User Data Template -->
+			
+			<!-- Start Edit Profile Template -->
+			<div id="userEditProfileTemplate">
+			<div class="sf_txt"><span>שם משתמש</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="float: right;width: 70%;" ><input type="text" name="userNick" id="Nick" class="inpi" value="[userNick]" onclick="$(this).css({'background':'none'});" onkeyup="$(this).css({'background':'none'});//check(this.id,this.value);" /></div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%">[userNick]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>סיסמה</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none; position: relative;" >
+					<div style="width: 70%;float: right;">
+						<input type="password" name="userPass" id="userPass" value="[userPass]" class="inpi" />
+					</div>
+					<div class="clear" data-role="none"></div>
+					<div style="width: 70%;float: right;">
+						<input type="password" name="pass2" id="userPass2" value="[userPass]" class="inpi" />
+					</div>
+					<span style="position: absolute;right: -43%;top:47%;color: #c8c8c9;">סיסמה שנית</span>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input:first');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%"><input disabled type="password" name="userPass" id="userPass" value="[userPass]" class="inpi" /></div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>דוא"ל</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="float: right;width:70%;" ><input type="text" name="userEmail" id="Email" class="inpi" value="[userEmail]" style="direction: ltr;" onclick="$(this).css({'background':'none'});" onkeyup="$(this).css({'background':'none'});//check(this.id,this.value);" /></div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 100%;overflow: hidden;text-overflow: ellipsis;">[userEmail]</div>
+					<button data-role="none" style="margin-top:-10px;" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>איזור</span></div>
+			<div class="sf_sel_wrap" style="padding-top: 4px;min-height: 43px;">
+				<div class="save" style="display: none;" >
+					<div style="width:70%;margin-bottom:2%;float: right;" class="regionsList">
+						<select name="countryRegionId" data-iconpos="left" id="countryRegionId">
+							<option value=""></option>
+							<!-- <? foreach ($regions['TableValues'] as $countryCode=>$countryName){ ?>
+							 <option <?=$userInfo[0]['countryRegionId']==$countryCode?'selected="selected" ':''?>value="<?=$countryCode?>"><?=$countryName?></option>
+							 <? } ?> -->
+						</select>
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'select');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit">
+					<div style="float: right;width: 70%"></div>
+					<button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button>
+				</div>
+			</div>
+			<div class="sf_txt"><span>עיר</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="width: 70%;float: right;">
+						<input type="text" name="userCity" value="[userCity]" id="CityName" class="inpi" />
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%">[userCity]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			
+			<div class="sf_txt"><span>קצת על עצמי</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="width: 70%;float: right;">
+						<textarea name="userAboutMe" id="userAboutMe" class="inpi" style="min-height:70px;">[userAboutMe]</textarea>
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'textarea');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%" class="textar">[userAboutMe]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="clear" data-role="none"></div>
+			<div class="sf_txt" style="line-height: normal;margin-top:10px;"><span>מה אני מחפש</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="width: 70%;float: right;">
+						<textarea name="userLookingFor" id="userLookingFor" class="inpi" style="min-height:70px;">[userLookingFor]</textarea>
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'textarea');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%" class="textar">[userLookingFor]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="clear" data-role="none"></div>
+			<div class="sf_txt"><span>שם פרטי</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="width: 70%;float: right;">
+						<input type="text" name="userfName" value="[userfName]" id="userfName" class="inpi" />
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%">[userfName]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>שם משפחה</span></div>
+			<div class="sf_sel_wrap">
+				<div class="save" style="display: none;" >
+					<div style="width: 70%;float: right;">
+						<input type="text" name="userlName" value="[userlName]" id="userfName" class="inpi" />
+					</div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'input');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%">[userlName]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>השקפה</span></div>
+			<div class="sf_sel_wrap" style="height:auto;min-height: 47px;">
+				<div class="save" style="display: none;" >
+					<div style="width:70%;margin-bottom:2%;float: right;" class="religionList"></div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'select');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%"></div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			<div class="sf_txt"><span>ת. לידה</span></div>
+			<div class="sf_sel_wrap" style="padding-top: 4px;height: 43px;">
+				<div class="save" style="display: none;" >
+					<div id="userBirth" class="right"></div>
+					<div class="clear" data-role="none"></div>
+					<button data-role="none" name="submit" onclick="app.saveProf(this,'select');return false;" class="formButton">שמירה</button>
+					<button data-role="none" name="cancel" id="cancelNick" onclick="app.editProf(this);return false;" class="formButton">ביטול</button>
+				</div>
+				<div class="edit"><div style="float: right;width: 70%">[j] / [n] / [Y]</div><button data-role="none" onclick="app.editProf(this);return false;" name="edit" class="formButton">לשנות</button></div>
+			</div>
+			</div>
+			<!-- END Edit Profile Template -->
+			
+			<!-- START User Profile Buttons Template -->
+			<div id="userProfileButtonsTemplate">
+				<button onclick="app.getChat([USER_ID],'[USERNICK]');" data-theme="a">שליחת הודעה</button>
+				<div class="clear"></div>
+				<div class="favi0">
+					<button onclick="app.manageLists('favi', 0, [USER_ID]);" data-theme="a">להסיר מהמועדפים</button>
+				</div>
+				<div class="clear"></div>
+				<div class="favi1">
+					<button onclick="app.manageLists('favi', 1, [USER_ID]);" data-theme="a">הוסף למועדפים</button>
+				</div>
+				<div class="clear"></div>
+				<br />
+			</div>
+			<!-- END User Profile Buttons Template -->
+			
+			
+			<!-- START User Profile Buttons Template 2-->
+			<div id="userProfileButtonsTemplate_2">
+				<button onclick="app.showPage('report_abuse_page')" data-theme="a">דווחו למערכת על כרטיס לא תקין</button>
+				<div class="clear"></div>
+				<div class="black1">
+					<button onclick="app.manageLists('black', 1, [USER_ID]);" data-theme="a">הוסף לרשימה השחורה</button>
+				</div>
+				<div class="clear"></div>
+				<div class="black0">
+					<button onclick="app.manageLists('black', 0, [USER_ID]);" data-theme="a">להסיר מהרשימה השחורה</button>
+				</div>
+				<div class="clear"></div>
+				<br />
+			</div>
+			<!-- END User Profile Buttons Template 2-->
+			
+			
+			<!-- START User Profile Group Template -->
+			<div id="userProfileGroupTemplate">
+				<div class="user_data_group bold">[GROUP_NAME]</div>
+			</div>
+			<!-- END User Profile Group Template -->
+			
+			
+			<!-- START User Profile Line Template -->
+			<div id="userProfileLineTemplate">
+				<div class="user_data_wrap">
+					<div class="user_data bold">[LINE_NAME]</div>
+					<div class="user_data">[LINE_VALUE]</div>
+					<div class="clear"></div>
+					<div class="underline"></div>
+				</div>
+			</div>
+			<!-- END User Profile Line Template -->
+			
+			<!-- START User Profile Line Template 2 -->
+			<div id="userProfileLineTemplate2">
+				<div class="user_data_wrap">
+					<div class="user_data2">[LINE_VALUE]</div>
+					<div class="underline"></div>
+				</div>
+			</div>
+			<!-- END User Profile Line Template 2-->
+			
+			
+			<!-- START Messenger Template -->
+			<div id="messengerTemplate">
+				<div class="mail_section" onclick="app.getChat([USER_ID],'[USERNICK]');">
+					<div class="new_mes_count"></div>
+					<img src="[IMAGE]" />
+					<div class="txt">
+						<strong>[USERNICK]</strong><br />
+						[RECENT_MESSAGE]
+					</div>
+					<span>[DATE]</span>
+					<div class="special2 hidden"></div>
+				</div>
+			</div>
+			<!-- END Messenger Template -->
+			
+			<!-- START Like Notification Template -->
+			<div id="likeNotificationTemplate">
+				<div class="mail_section [IS_READ_CLASS]" onclick="[FUNCTION]">
+					<div class="txt">
+						<strong>[USERNICK]</strong><br />
+						[TEXT]
+					</div>
+					<img src="[IMAGE]" />
+					<span>[DATE]</span>
+					<div class="[BINGO_CLASS]"></div>
+				</div>
+			</div>
+			<!-- END Like Notification Template -->
+			
+			<!-- START Chat Message Template -->
+			<div id="chatMessageTemplate">
+				<div class="message_cont [MESSAGE_TYPE] [MESSAGE_FLOAT]">
+					[MESSAGE]
+					<div class="buySubscr"><button onclick="app.getSubscription();" data-theme="a">רכישת מנוי</button></div>
+					<div class="useFreePoint">
+						או
+						<br>
+						<button onclick="app.useFreePointToReadMessage(this,[MESSAGE_ID]);" data-theme="a">שימוש בנקודה</button>
+					</div>
+					
+					<input type="hidden" class="isRead" value="[IS_READ]">
+				</div>
+				<div class="message_status [MESSAGE_STATUS_VISIBILITY]">
+					<img src="images/[MESSAGE_STATUS_IMAGE]">
+				</div>
+				<div class="message_info [INFO]">נשלח ב: [DATE] בשעה: [TIME]</div>
+			</div>
+			<!-- END Chat Message Template -->
+			
+			<!-- START Loading Bar Template -->
+			<div id="loadingBarTemplate">
+				<div class="loadingBar"></div>
+			</div>
+			<!-- END Loading Bar Template -->
+			
+			<!-- START Images List Template -->
+			<div id="editImageTemplate">
+				<div class="userImageWrap">
+					<img src="[IMAGE]" width="295" /><br />
+					<span class="imageStatus"></span>
+					<button onclick="app.confirmDeleteImage([IMAGE_ID]);" data-theme="a">למחוק</button>
+					<br /><br /><br />
+				</div>
+			</div>
+			<!-- END Images List Template -->
+					
+			<!-- START User Photo Template -->
+			<div id="userPhotoTemplate">
+				<figure itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject" class="pic_wrap">
+					<a href="#" itemprop="contentUrl" data-size="1x1">
+						<img src="" id="[ID]" itemprop="thumbnail" alt="Image description" />
+					</a>
+					<!--<figcaption itemprop="caption description">Image caption</figcaption>-->
+				</figure>
+			</div>
+			<!-- END User Photo Template -->
+			
+			<!-- START Bingo Template -->
+			<div id="bingoTemplate">
+				
+				<div class="bingoWrapper">
+					
+					<div class="close" onclick="app.back(); app.bingoIsActive=false;"></div>
+					<div class="logo"></div>
+					
+					<div class="imagesWrapper">
+						<div class="imageCont" style="background-image: url('[USER_IMAGE_URL_1]');"></div>
+						<div class="plus"></div>
+						<div class="imageCont" style="background-image: url('[USER_IMAGE_URL_2]');"></div>
+					</div>
+					
+					<div class="clear"></div>
+					
+					
+					<div class="txt">
+						גם
+						[USERNICK]
+						בעניין שלך!
+					</div>
+					
+					<div class="chat" onclick="app.getChat('[USER_ID]', '[USERNICK]');"><span>דברו איתם</span></div>
+					<div class="ignore" onclick="app.back(); app.bingoIsActive=false;"><span>המשיכו לדפדף</span></div>
+					
+				</div>
+				
+			</div>
+			<!-- END Bingo Template -->
+			
+			
+	</div>
+	<div class="loading">
+		<div class="spinner-wrapper">
+			<span class="spinner-text">LOADING</span>
+			<span class="spinner"></span>
+		</div>
+	</div>
+	
+	
+	
+	
+	<!-- Root element of PhotoSwipe. Must have class pswp. -->
+	<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+		
+		<!-- Background of PhotoSwipe.
+		 It's a separate element, as animating opacity is faster than rgba(). -->
+		<div class="pswp__bg"></div>
+		
+		<!-- Slides wrapper with overflow:hidden. -->
+		<div class="pswp__scroll-wrap">
+			
+			<!-- Container that holds slides. PhotoSwipe keeps only 3 slides in DOM to save memory. -->
+			<div class="pswp__container">
+				<!-- don't modify these 3 pswp__item elements, data is added later on -->
+				<div class="pswp__item"></div>
+				<div class="pswp__item"></div>
+				<div class="pswp__item"></div>
+			</div>
+			
+			<!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+			<div class="pswp__ui pswp__ui--hidden">
+				
+				<div class="pswp__top-bar">
+					
+					<!--  Controls are self-explanatory. Order can be changed. -->
+					
+					<div class="pswp__counter"></div>
+					
+					<button class="pswp__button pswp__button--close" title="Close (Esc)" data-role="none"></button>
+					
+					<!--<button class="pswp__button pswp__button--share" title="Share" data-role="none"></button>-->
+					
+					<button class="pswp__button pswp__button--fs" title="Toggle fullscreen" data-role="none"></button>
+					
+					<button class="pswp__button pswp__button--zoom" title="Zoom in/out" data-role="none"></button>
+					
+					<!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+					<!-- element will get class pswp__preloader--active when preloader is running -->
+					<div class="pswp__preloader">
+						<div class="pswp__preloader__icn">
+							<div class="pswp__preloader__cut">
+								<div class="pswp__preloader__donut"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+					<div class="pswp__share-tooltip"></div>
+				</div>
+				
+				<button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)" data-role="none">
+				</button>
+				
+				<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)" data-role="none">
+				</button>
+				
+				<div class="pswp__caption">
+					<div class="pswp__caption__center"></div>
+				</div>
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+</body>
+</html>
